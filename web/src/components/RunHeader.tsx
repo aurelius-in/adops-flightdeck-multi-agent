@@ -38,10 +38,7 @@ export default function RunHeader({
     <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
       <div className="flex items-center gap-3">
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
-        <div className="text-sm">
-          <div className="font-medium">AdOps Flightdeck</div>
-          <div className="text-xs text-neutral-400">{runId ? "Active run" : "Idle"} {runId && <span className="ml-2 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block pulse-dot"/> live</span>}</div>
-        </div>
+        {/* Branding text removed to avoid redundancy with logo */}
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenContext}>Context</button>
@@ -63,10 +60,19 @@ export default function RunHeader({
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
       </div>
       <div className="flex items-center gap-3">
-        <PerfTile label="Spend" value={formatCurrency(perf?.spend)} />
-        <PerfTile label="Conv" value={String(perf?.conversions ?? "-")} />
-        <PerfTile label="ROAS" value={perf?.roas ? String(perf.roas) : "-"} />
-        <PerfTile label="CPA" value={perf?.cpa ? formatCurrency(perf.cpa) : "-"} />
+        {(role === "Ad Rep" ? [
+          { label: "ROAS", value: perf?.roas ? String(perf.roas) : "-" },
+          { label: "CPA", value: perf?.cpa ? formatCurrency(perf.cpa) : "-" },
+          { label: "Spend", value: formatCurrency(perf?.spend) },
+          { label: "Conv", value: String(perf?.conversions ?? "-") },
+        ] : [
+          { label: "Spend", value: formatCurrency(perf?.spend) },
+          { label: "Conv", value: String(perf?.conversions ?? "-") },
+          { label: "ROAS", value: perf?.roas ? String(perf.roas) : "-" },
+          { label: "CPA", value: perf?.cpa ? formatCurrency(perf.cpa) : "-" },
+        ]).map(t => (
+          <PerfTile key={t.label} label={t.label} value={String(t.value)} />
+        ))}
         <div className="text-xs text-neutral-400 max-w-[260px] truncate" title={lastEvent || ""}>{lastEvent || "Waiting for activity..."}</div>
         <button className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={onOpenQueue}>Action Queue</button>
       </div>
