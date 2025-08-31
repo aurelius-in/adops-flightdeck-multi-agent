@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { isOfflineMode, loadOfflineEvents } from "../lib/offline";
 import { summarize, timeAgo } from "../lib/format";
 import { Sparkline, Bar, Donut, StackedBars } from "../lib/charts";
+import { allowedOperateBlocks } from "../lib/roles";
 type Event = { ts:number; agent:string; type:string; data:any };
 
 export default function Operate({ role, runId, onQueue, onEvent }:{ role?: string; runId: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
@@ -57,10 +58,13 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {allowedOperateBlocks(role).some(([a])=>a==="experiment") && (
         <Card title="⏱ Experiment planner">
           <div className="text-sm mb-2">{summarize("experiment","design", get("experiment","design"))}</div>
           <button className="px-3 py-2 rounded bg-white text-black">Start experiment</button>
         </Card>
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="pacing") && (
         <Card title="⏱ Budget pacer">
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -90,7 +94,8 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
             </div>
           </div>
         </Card>
-        {(!role || role==="Ad Rep") ? null : (
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="spo") && (
         <Card title="⏱ Supply-path optimizer">
           <StackedBars groups={[{label:"Exchange paths", parts:[{label:"A>DSP1", value: 62},{label:"B>DSP2", value: 38}]}]} />
           <div className="flex items-center gap-2 mt-2">
@@ -98,6 +103,7 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
           </div>
         </Card>
         )}
+        {allowedOperateBlocks(role).some(([a])=>a==="roadmap") && (
         <Card title="⏱ Roadmap">
           <div className="grid grid-cols-4 gap-2 text-xs">
             {(["Backlog","Next","Running","Done"]).map(col=> (
@@ -109,6 +115,8 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
             ))}
           </div>
         </Card>
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="anomaly") && (
         <Card title="⚠ Anomaly watchdog">
           <div className="flex items-center justify-between">
             <Sparkline points={ctrSpark} />
@@ -118,10 +126,14 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
             </div>
           </div>
         </Card>
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="rootcause") && (
         <Card title="⚠ Root-cause sleuth">
           <Bar data={[{label:"Creative fatigue", value:34},{label:"Audience shift", value:22},{label:"Bid pressure", value:18}]} />
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Apply proposed fixes", impact: "+5% CTR" })}>Propose fixes</button>
         </Card>
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="negatives") && (
         <Card title="⚠ Negative-signal miner">
           <div className="text-xs space-y-1">
             {["free download","kids","DIY hack"].map(term=> (
@@ -132,7 +144,8 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
             ))}
           </div>
         </Card>
-        {(!role || role==="Ad Rep") ? null : (
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="fraud") && (
         <Card title="⚠ Fraud sentinel">
           <div className="flex items-center gap-3">
             <Donut value={1.2} total={100} />
@@ -141,6 +154,7 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
         </Card>
         )}
+        {allowedOperateBlocks(role).some(([a])=>a==="budget") && (
         <Card title="⏱ Budget officer">
           <div className="grid grid-cols-3 gap-2 text-xs">
             {["Meta","Search","TikTok"].map(ch=> (
@@ -152,6 +166,8 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "budget", title: "Save caps", impact: "Hold daily max" })}>Save caps</button>
         </Card>
+        )}
+        {allowedOperateBlocks(role).some(([a])=>a==="audit") && (
         <Card title="✔ Change auditor" className="md:col-span-2">
           <ul className="text-xs text-neutral-300 space-y-1 max-h-48 overflow-auto">
             {events.filter(e=>e.agent==="audit").slice(-10).reverse().map((e,i)=> (
@@ -162,6 +178,7 @@ export default function Operate({ role, runId, onQueue, onEvent }:{ role?: strin
             ))}
           </ul>
         </Card>
+        )}
       </div>
     </div>
   );

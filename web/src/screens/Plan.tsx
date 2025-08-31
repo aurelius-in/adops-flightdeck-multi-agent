@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
+import { allowedPlanAgents } from "../lib/roles";
 
 export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; role?: string }) {
   const [product, setProduct] = useState("SmartWater Bottle");
@@ -81,8 +82,8 @@ export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: stri
           )}
         </div>
       </div>
-      <AgentGrid title="Target & offer" agents={filterAgents(role, ["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]) } runId={runId} snapshot={snapshot} onQueue={onQueue} />
-      <AgentGrid title="Creative & guardrails" agents={filterAgents(role, ["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]) } runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      <AgentGrid title="Target & offer" agents={allowedPlanAgents(role).filter(a=>["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      <AgentGrid title="Creative & guardrails" agents={allowedPlanAgents(role).filter(a=>["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
     </div>
   );
 }
@@ -283,14 +284,7 @@ function iconForAgent(agent:string): string {
   return m[agent] || "";
 }
 
-function filterAgents(role: string | undefined, agents: string[]): string[] {
-  if (!role || role === "Ad Rep") {
-    // Ad Rep sees planning + actionable creative, hides deep compliance/tooling
-    const hide = new Set(["Gene splicer","Tone balancer","Localization","Accessibility","Style prompts","Voiceover scripts","Prompt palette"]);
-    return agents.filter(a=>!hide.has(a));
-  }
-  return agents;
-}
+// role filtering now centralized in lib/roles
 
 function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const a = snapshot?.artifacts || {};
