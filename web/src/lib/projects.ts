@@ -7,6 +7,8 @@ export type Project = {
   brandRules?: string;
   channels?: string[];
   locales?: string[];
+  assets?: { id:string; tags?: string[]; palette?: string[] }[];
+  offers?: { label:string; predicted_iROAS?: number; marginFloor?: number }[];
   archivedAt?: number|null;
   createdAt: number;
   updatedAt: number;
@@ -43,6 +45,17 @@ export function upsertProject(p: Project): Project {
   return p;
 }
 
+export function getProjectById(id: string): Project | null {
+  const list = listProjects();
+  return list.find(p=>p.id===id) || null;
+}
+
+export function updateProject(id:string, partial: Partial<Project>): Project | null {
+  const current = getProjectById(id); if (!current) return null;
+  const next = { ...current, ...partial, updatedAt: Date.now() } as Project;
+  return upsertProject(next);
+}
+
 export function createProject(data: Partial<Project>): Project {
   const now = Date.now();
   const p: Project = {
@@ -54,6 +67,8 @@ export function createProject(data: Partial<Project>): Project {
     brandRules: data.brandRules,
     channels: data.channels || ["Meta","Search","TikTok"],
     locales: data.locales || ["en"],
+    assets: data.assets || [],
+    offers: data.offers || [],
     archivedAt: null,
     createdAt: now,
     updatedAt: now,
@@ -109,7 +124,7 @@ export function seedSampleProjectsIfEmpty() {
   const list = listProjects();
   if (list.length>0) return;
   const seeds: Partial<Project>[] = [
-    { name: "Project • Fitness Wearables", product: "SmartWater Bottle", audience: "Fitness enthusiasts 25–45", dailyBudget: 200, brandRules: "No medical claims. Friendly, confident tone."},
+    { name: "Project • Fitness Wearables", product: "SmartWater Bottle", audience: "Fitness enthusiasts 25–45", dailyBudget: 200, brandRules: "No medical claims. Friendly, confident tone.", assets:[{id:"img01", tags:["blue","bottle"]},{id:"img02", tags:["gym"]}], offers:[{label:"Bundle x2", predicted_iROAS:2.1, marginFloor:0.35},{label:"25% Off 1st", predicted_iROAS:1.8, marginFloor:0.25}]},
     { name: "Project • Q3 New Market", product: "Hydration App", audience: "Desk Athletes", dailyBudget: 150, brandRules: "Evidence-based tone. No guarantees."},
     { name: "Project • DTC Skincare", product: "Retinol Serum", audience: "Women 28–45, skincare-aware", dailyBudget: 350, brandRules: "No cure/diagnose claims. Dermatologist-reviewed."},
     { name: "Project • Meal Kits", product: "Family Meal Kit", audience: "Parents with 2+ kids", dailyBudget: 400, brandRules: "No weight-loss claims. Emphasize convenience."},
