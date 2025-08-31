@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { isMockMode, loadMockEvents } from "../lib/mock";
+import { isOfflineMode, loadOfflineEvents } from "../lib/offline";
 type Event = { ts:number; agent:string; type:string; data:any };
 
 export default function Operate({ runId }: { runId: string }) {
   const [events, setEvents] = useState<Event[]>([]);
   useEffect(() => {
-    if (!runId && !isMockMode()) return;
-    if (isMockMode()) {
-      loadMockEvents().then((e) => setEvents(e));
+    if (!runId && !isOfflineMode()) return;
+    if (isOfflineMode()) {
+      loadOfflineEvents().then((e) => setEvents(e));
       return;
     }
     const es = new EventSource(`http://localhost:8787/api/stream/${runId}`);
