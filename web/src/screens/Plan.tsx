@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
 import { allowedPlanAgents } from "../lib/roles";
 
-export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; role?: string }) {
-  const [product, setProduct] = useState("SmartWater Bottle");
-  const [audience, setAudience] = useState("Fitness enthusiasts 25–45");
-  const [budget, setBudget] = useState(200);
-  const [rules, setRules] = useState("No medical claims. Friendly, confident tone.");
+export default function Plan({ onRun, runId, onQueue, role, project, onSaveProject }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; role?: string; project?: { product?:string; audience?:string; dailyBudget?:number; brandRules?:string }; onSaveProject?:(updates:{ product?:string; audience?:string; dailyBudget?:number; brandRules?:string })=>void }) {
+  const [product, setProduct] = useState(project?.product || "");
+  const [audience, setAudience] = useState(project?.audience || "");
+  const [budget, setBudget] = useState(project?.dailyBudget || 0);
+  const [rules, setRules] = useState(project?.brandRules || "");
   const [snapshot, setSnapshot] = useState<any>(null);
   const [persona, setPersona] = useState<"Ad Rep"|"Executive">("Ad Rep");
 
@@ -59,8 +59,8 @@ export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: stri
       <div className="card p-4">
         <div className="text-xs text-neutral-400 mb-2">Quick actions</div>
         <div className="flex gap-2">
-          <button title="Kick off agent workflow for this product and audience" className="flex-1 px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run</button>
-          <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Save draft</button>
+          <button title="Kick off agent workflow for this product and audience" className="flex-1 px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run without saving</button>
+          <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
         </div>
       </div>
       <div className="lg:col-span-3 card p-4">
