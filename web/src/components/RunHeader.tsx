@@ -32,7 +32,7 @@ export default function RunHeader({
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
         <div className="text-sm">
           <div className="font-medium">{product || "Untitled"}</div>
-          <div className="text-xs text-neutral-400">Daily budget {formatCurrency(budget)} {runId && <span className="ml-2 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"/> live</span>}</div>
+          <div className="text-xs text-neutral-400">Daily budget {formatCurrency(budget)} {runId && <span className="ml-2 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block pulse-dot"/> live</span>}</div>
         </div>
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
