@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isMockMode } from "../lib/mock";
 
 export default function Plan({ onRun }: { onRun: (id: string)=>void }) {
   const [product, setProduct] = useState("SmartWater Bottle");
@@ -7,6 +8,7 @@ export default function Plan({ onRun }: { onRun: (id: string)=>void }) {
   const [rules, setRules] = useState("No medical claims. Friendly, confident tone.");
 
   async function start() {
+    if (isMockMode()) { onRun("mock-run"); return; }
     const res = await fetch("http://localhost:8787/api/run", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

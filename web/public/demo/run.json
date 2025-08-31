@@ -1,0 +1,12 @@
+{
+  "artifacts": {
+    "audienceDNA": [{"name":"HIIT Heroes","ltv":280}],
+    "offers": [{"label":"Bundle x2","predicted_iROAS":2.1}],
+    "creatives": [{"headline":"Proven hydration for busy days","cta":"Start your trial"}],
+    "experiment": {"arms":3,"metric":"iROAS"},
+    "attribution": {"credit":[{"channel":"Meta","point":0.42}]},
+    "report": {"iROAS":2.4,"recommendation":"Scale variant 1"}
+  }
+}
+
+

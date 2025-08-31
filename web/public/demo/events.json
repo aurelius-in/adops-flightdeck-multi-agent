@@ -1,0 +1,16 @@
+[
+  { "ts": 1, "agent": "system", "type": "connected", "data": {} },
+  { "ts": 2, "agent": "audienceDNA", "type": "cohorts", "data": [{"name":"HIIT Heroes","size":42000},{"name":"Desk Athletes","size":67000}] },
+  { "ts": 3, "agent": "warmStart", "type": "priors", "data": {"priors":[{"category":"Smart Hydration","confidence":0.78}] } },
+  { "ts": 4, "agent": "offers", "type": "matrix", "data": [{"label":"Bundle x2"},{"label":"25% Off 1st"}] },
+  { "ts": 5, "agent": "creative", "type": "variants", "data": [{"headline":"Proven hydration for busy days"}] },
+  { "ts": 6, "agent": "thumbstop", "type": "ranked", "data": {"best":{"frame":0,"stopProb":0.71}} },
+  { "ts": 7, "agent": "experiment", "type": "design", "data": {"arms":3,"metric":"iROAS"} },
+  { "ts": 8, "agent": "pacing", "type": "plan", "data": [{"arm":0,"dailyBudget":100}] },
+  { "ts": 9, "agent": "spo", "type": "routes", "data": {"allow":["ExchangeA>DSP1"]} },
+  { "ts": 10, "agent": "anomaly", "type": "tick", "data": {"t":0,"metrics":[{"impr":180,"ctr":0.03}] } },
+  { "ts": 11, "agent": "rootcause", "type": "analysis", "data": {"suspects":[{"factor":"Creative Fatigue","weight":0.34}]} },
+  { "ts": 12, "agent": "report", "type": "summary", "data": {"iROAS":2.4} }
+]
+
+
