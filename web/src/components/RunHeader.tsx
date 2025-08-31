@@ -54,7 +54,7 @@ export default function RunHeader({
         </div>
         {product && (
           <div className="ml-3 text-xs border border-neutral-800 rounded px-2 py-1 bg-neutral-900" title="Current context">
-            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {formatCurrency(budget)}</span>}
+            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(budget)}</span>}
           </div>
         )}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
