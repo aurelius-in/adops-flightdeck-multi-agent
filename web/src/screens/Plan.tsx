@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { isOfflineMode } from "../lib/offline";
 
-export default function Plan({ onRun }: { onRun: (id: string)=>void }) {
+export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runId?: string }) {
   const [product, setProduct] = useState("SmartWater Bottle");
   const [audience, setAudience] = useState("Fitness enthusiasts 25–45");
   const [budget, setBudget] = useState(200);
@@ -43,28 +43,28 @@ export default function Plan({ onRun }: { onRun: (id: string)=>void }) {
       <div className="card p-4 flex items-end">
         <button title="Kick off agent workflow for this product and audience" className="w-full px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run</button>
       </div>
-      <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} />
-      <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} />
+      <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} runId={runId} />
+      <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} runId={runId} />
     </div>
   );
 }
 
-function AgentGrid({ title, agents}:{title:string; agents:string[]}) {
+function AgentGrid({ title, agents, runId}:{title:string; agents:string[]; runId?: string}) {
   return (
     <div className="lg:col-span-3 card p-4">
       <div className="font-medium mb-3 text-brand-blue">{title}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {agents.map(a=><AgentCard key={a} agent={a}/>)}
+        {agents.map(a=><AgentCard key={a} agent={a} runId={runId}/>)}
       </div>
     </div>
   );
 }
 
-function AgentCard({ agent }:{agent:string}) {
+function AgentCard({ agent, runId }:{agent:string; runId?: string}) {
   return (
     <div title="Agent module that populates this area during the run" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
       <div className="text-sm font-medium">{agent}</div>
-      <div className="text-xs text-neutral-400">Populates after run begins.</div>
+      <div className="text-xs text-neutral-400">{runId?"Populated.":"Populates after run begins."}</div>
     </div>
   );
 }

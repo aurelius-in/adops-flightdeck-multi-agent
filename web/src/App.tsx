@@ -33,7 +33,7 @@ export default function App() {
             <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
           ))}
         </nav>
-        {tab==="Plan" && <Plan onRun={setRunId}/>} 
+        {tab==="Plan" && <Plan onRun={setRunId} runId={runId}/>} 
         {tab==="Operate" && <Operate runId={runId}/>} 
         {tab==="Audit" && <Audit runId={runId}/>} 
 
