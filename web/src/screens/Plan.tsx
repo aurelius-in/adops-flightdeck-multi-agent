@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
 
-export default function Plan({ onRun, runId, onQueue }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
+export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; role?: string }) {
   const [product, setProduct] = useState("SmartWater Bottle");
   const [audience, setAudience] = useState("Fitness enthusiasts 25–45");
   const [budget, setBudget] = useState(200);
@@ -77,8 +77,8 @@ export default function Plan({ onRun, runId, onQueue }: { onRun: (id: string)=>v
           )}
         </div>
       </div>
-      <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} runId={runId} snapshot={snapshot} onQueue={onQueue} />
-      <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      <AgentGrid title="Target & offer" agents={filterAgents(role, ["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]) } runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      <AgentGrid title="Creative & guardrails" agents={filterAgents(role, ["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]) } runId={runId} snapshot={snapshot} onQueue={onQueue} />
     </div>
   );
 }
@@ -277,6 +277,15 @@ function iconForAgent(agent:string): string {
     "Prompt palette": "✎",
   };
   return m[agent] || "";
+}
+
+function filterAgents(role: string | undefined, agents: string[]): string[] {
+  if (!role || role === "Ad Rep") {
+    // Ad Rep sees planning + actionable creative, hides deep compliance/tooling
+    const hide = new Set(["Gene splicer","Tone balancer","Localization","Accessibility","Style prompts","Voiceover scripts","Prompt palette"]);
+    return agents.filter(a=>!hide.has(a));
+  }
+  return agents;
 }
 
 function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
