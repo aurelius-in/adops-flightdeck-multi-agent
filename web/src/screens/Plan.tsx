@@ -63,22 +63,49 @@ export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runI
   );
 }
 
+const AGENT_DISPLAY: Record<string, "tile"|"card"> = {
+  // Large, information-dense cards
+  "Audience DNA": "card",
+  "Offer composer": "card",
+  "Asset librarian": "card",
+  "Creative brief": "card",
+  "Creative variants": "card",
+  "UGC outline": "card",
+  "Thumb‑stop": "card",
+
+  // Compact tiles
+  "Warm start": "tile",
+  "Gene splicer": "tile",
+  "Tone balancer": "tile",
+  "Compliance review": "tile",
+  "Localization": "tile",
+  "Accessibility": "tile",
+  "Style prompts": "tile",
+  "Voiceover scripts": "tile",
+  "Prompt palette": "tile",
+};
+
 function AgentGrid({ title, agents, runId, snapshot}:{title:string; agents:string[]; runId?: string; snapshot?: any}) {
   return (
     <div className="lg:col-span-3 card p-4">
       <div className="font-medium mb-3 text-brand-blue">{title}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {agents.map(a=><AgentCard key={a} agent={a} runId={runId} snapshot={snapshot}/>)}
+        {agents.map(a=>{
+          const mode = AGENT_DISPLAY[a] ?? "tile";
+          return mode === "card"
+            ? <AgentCardDetailed key={a} agent={a} runId={runId} snapshot={snapshot} />
+            : <AgentTile key={a} agent={a} runId={runId} snapshot={snapshot} />;
+        })}
       </div>
     </div>
   );
 }
 
-function AgentCard({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
+function AgentTile({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
   const s = snapshot?.artifacts || {};
   const summary = summarizePlan(agent, s);
   return (
-    <div title="Agent module that populates this area during the run" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+    <div title="Agent module" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
       <div className="text-sm font-medium flex items-center justify-between">
         <span>{agent}</span>
         {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
@@ -144,6 +171,137 @@ function summarizePlan(agentLabel: string, a: Record<string, any>): string | "" 
     }
   } catch {
     return "";
+  }
+}
+
+function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
+  const a = snapshot?.artifacts || {};
+  const header = (
+    <div className="text-sm font-medium flex items-center justify-between mb-2">
+      <span>{agent}</span>
+      {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
+    </div>
+  );
+  const empty = <div className="text-xs text-neutral-400">{runId?"Populated.":"Populates after run begins."}</div>;
+
+  switch (agent) {
+    case "Audience DNA": {
+      const cohorts = Array.isArray(a.audienceDNA) ? a.audienceDNA.slice(0,3) : [];
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2">
+          {header}
+          {cohorts.length ? (
+            <div className="space-y-1 text-xs">
+              {cohorts.map((c:any)=> (
+                <div key={c.name} className="flex items-center justify-between">
+                  <div className="truncate">{c.name} <span className="text-neutral-500">• {c.angle}</span></div>
+                  <div className="text-neutral-400">{c.size?.toLocaleString?.()} ppl</div>
+                </div>
+              ))}
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    case "Offer composer": {
+      const offers = Array.isArray(a.offers) ? a.offers.slice(0,3) : [];
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          {offers.length ? (
+            <div className="space-y-1 text-xs">
+              {offers.map((o:any)=> (
+                <div key={o.label} className="flex items-center justify-between">
+                  <div>{o.label}</div>
+                  <div className="text-neutral-400">iROAS {o.predicted_iROAS}</div>
+                </div>
+              ))}
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    case "Asset librarian": {
+      const assets = Array.isArray(a.assets) ? a.assets.slice(0,6) : [];
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          {assets.length ? (
+            <div className="flex flex-wrap gap-1 text-[11px]">
+              {assets.map((as:any)=> (
+                <span key={as.id} className="px-2 py-0.5 border border-neutral-800 rounded bg-neutral-900">{as.tags?.[0] ?? as.id}</span>
+              ))}
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    case "Creative brief": {
+      const b = a.creativeBrief;
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2">
+          {header}
+          {b ? (
+            <div className="text-xs space-y-1">
+              <div className="font-medium">{b.promise}</div>
+              <div className="text-neutral-400">Tone: {b.tone}</div>
+              <div className="flex flex-wrap gap-1">
+                {(b.ctAs||[]).map((c:string)=> <span key={c} className="px-2 py-0.5 border border-neutral-800 rounded bg-neutral-900">{c}</span>)}
+              </div>
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    case "Creative variants": {
+      const list = Array.isArray(a.creatives) ? a.creatives.slice(0,2) : [];
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          {list.length ? (
+            <div className="text-xs space-y-1">
+              {list.map((v:any,idx:number)=> (
+                <div key={idx} className="truncate">{v.headline} <span className="text-neutral-500">• {v.cta}</span></div>
+              ))}
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    case "UGC outline": {
+      const beats = Array.isArray(a.ugc) ? a.ugc.slice(0,5) : [];
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          {beats.length ? (
+            <ol className="list-decimal list-inside text-xs space-y-0.5">
+              {beats.map((b:string, i:number)=> <li key={i} className="truncate">{b}</li>)}
+            </ol>
+          ) : empty}
+        </div>
+      );
+    }
+    case "Thumb‑stop": {
+      const best = a.thumbstop?.best;
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          {best ? (
+            <div className="text-xs">
+              <div className="mb-1">Caption: {best.caption ?? "Best frame"}</div>
+              <div className="text-neutral-400">Attention: {(best.stopProb*100|0)}%</div>
+            </div>
+          ) : empty}
+        </div>
+      );
+    }
+    default:
+      return (
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+          {header}
+          <div className="text-xs text-neutral-300">{summarizePlan(agent, a) || empty}</div>
+        </div>
+      );
   }
 }
 
