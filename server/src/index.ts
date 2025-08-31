@@ -7,6 +7,7 @@ import { runGraph } from "./graph";
 import { AgentContext } from "./types";
 import { config } from "./config";
 import { createRun, getRun, putArtifact, getArtifactSignedUrl, getIdempotentRunId, setIdempotentRunId, recordAction } from "./store";
+import { buildAdapters } from "./tools";
 
 const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 1_000_000 });
 await app.register(cors, { origin: config.CORS_ORIGIN, credentials: true });
@@ -36,7 +37,7 @@ app.post("/api/run", async (req: any, reply) => {
     const ls = listeners.get(runId) || new Set();
     ls.forEach((res) => res.write(`data: ${JSON.stringify(e)}\n\n`));
   };
-  const ctx: AgentContext = { runId, product, audience, budget, brandRules, connectors, memory: {}, artifacts, emit };
+  const ctx: AgentContext = { runId, product, audience, budget, brandRules, connectors: buildAdapters(), memory: {}, artifacts, emit };
   (async () => {
     try { await runGraph(ctx); } 
     catch (err) { emit({ ts: Date.now(), agent: "system", type: "error", data: String(err) }); }
