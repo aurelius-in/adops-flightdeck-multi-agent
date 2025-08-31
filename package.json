@@ -1,0 +1,19 @@
+{
+  "name": "adops-flightdeck-multi-agent",
+  "private": true,
+  "workspaces": ["server", "web"],
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:*\"",
+    "dev:web": "npm -w web run dev",
+    "dev:server": "npm -w server run dev",
+    "build": "npm -w server run build && npm -w web run build",
+    "format": "prettier --write .",
+    "postinstall": "node scripts/copy-logo.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.3.3"
+  }
+}
+
+
