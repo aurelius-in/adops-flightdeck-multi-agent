@@ -48,6 +48,18 @@ export default function Operate({ runId }: { runId: string }) {
           </Card>
         );
       })}
+      <div className="md:col-span-2">
+        <Card title="Run timeline">
+          <ul className="text-xs text-neutral-300 space-y-1 max-h-64 overflow-auto">
+            {events.slice(-20).reverse().map((e,i)=> (
+              <li key={i} className="flex items-center justify-between gap-2">
+                <span className="truncate"><span className="text-neutral-400">{e.agent}</span> • {e.type} — {summarize(e.agent, e.type, e.data)}</span>
+                <span className="text-[10px] text-neutral-500 whitespace-nowrap">{timeAgo(e.ts)}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
     </div>
   );
 }
