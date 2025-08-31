@@ -8,6 +8,8 @@ import { AgentContext } from "./types";
 import { config } from "./config";
 import { createRun, getRun, putArtifact, getArtifactSignedUrl, getIdempotentRunId, setIdempotentRunId, recordAction } from "./store";
 import { buildAdapters } from "./tools";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 1_000_000 });
 await app.register(cors, { origin: config.CORS_ORIGIN, credentials: true });
@@ -95,6 +97,18 @@ app.post("/api/actions/:runId", async (req: any, reply) => {
   if (!actionId || typeof approved !== "boolean") { reply.code(400); return { error: "actionId and approved required" }; }
   await recordAction({ runId, actionId, approved, at: Date.now(), payload, approvedBy: "user" });
   return { ok: true };
+});
+
+// Policies endpoint
+app.get("/api/policies", async () => {
+  try {
+    const guide = await readFile(join(process.cwd(), "server", "src", "policies", "brand_guide.md"), "utf8");
+    const bannedJson = await readFile(join(process.cwd(), "server", "src", "datasets", "banned.json"), "utf8");
+    const banned = JSON.parse(bannedJson);
+    return { guide, banned };
+  } catch {
+    return { guide: "", banned: [] };
+  }
 });
 
 // Not found

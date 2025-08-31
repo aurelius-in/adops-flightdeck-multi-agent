@@ -4,6 +4,7 @@ import Operate from "./screens/Operate";
 import Audit from "./screens/Audit";
 import Library from "./screens/Library";
 import Investigate from "./screens/Investigate";
+import { isOfflineMode } from "./lib/offline";
 
 type Tab = "Plan"|"Operate"|"Audit";
 
@@ -12,6 +13,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("Plan");
   const [showLib, setShowLib] = useState(false);
   const [showInvestigate, setShowInvestigate] = useState(false);
+  const offline = isOfflineMode();
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -20,6 +22,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-8 w-auto" />
             <h1 className="text-xl font-semibold tracking-wide">AdOps Flightdeck</h1>
+            {offline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
           </div>
           <div className="flex items-center gap-2">
             <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
