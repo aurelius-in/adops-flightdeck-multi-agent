@@ -14,7 +14,7 @@ export default function ProjectSwitcher({ onSelect }:{ onSelect:(p:Project)=>voi
   }, []);
 
   const filtered = useMemo(()=> items.filter(p=>!q || p.name.toLowerCase().includes(q.toLowerCase())), [items,q]);
-  const activeName = items.find(p=>p.id===active)?.name || "Select project";
+  const activeName = items.find(p=>p.id===active)?.name || "";
 
   function handleSelect(id:string){
     const p = items.find(x=>x.id===id); if (!p) return; setActive(id); setLastProjectId(id); onSelect(p); setOpen(false);
@@ -32,7 +32,10 @@ export default function ProjectSwitcher({ onSelect }:{ onSelect:(p:Project)=>voi
 
   return (
     <div className="relative">
-      <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>setOpen(o=>!o)}>{activeName}</button>
+      <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs flex items-center gap-1" onClick={()=>setOpen(o=>!o)}>
+        <span>Project</span>
+        <span className="text-[10px]">▾</span>
+      </button>
       {open && (
         <div className="absolute z-30 mt-1 w-80 bg-neutral-950 border border-neutral-800 rounded shadow-lg p-2">
           <div className="flex items-center gap-2 mb-2">
