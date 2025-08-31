@@ -15,7 +15,10 @@ export default function RunHeader({
   lastEvent,
   perf,
   onToggleOffline,
-  onOpenQueue
+  onOpenQueue,
+  role,
+  onRoleChange,
+  onOpenToday
 }:{
   product?: string;
   budget?: number;
@@ -25,6 +28,9 @@ export default function RunHeader({
   perf?: PerformanceSummary;
   onToggleOffline: () => void;
   onOpenQueue: () => void;
+  role: string;
+  onRoleChange: (r:string)=>void;
+  onOpenToday: ()=>void;
 }) {
   return (
     <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -36,6 +42,14 @@ export default function RunHeader({
         </div>
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
+        <select className="ml-2 bg-neutral-950 border border-neutral-800 rounded p-1 text-xs" value={role} onChange={e=>onRoleChange(e.target.value)}>
+          <option>Ad Rep</option>
+          <option>Executive</option>
+          <option>Creative</option>
+          <option>Compliance</option>
+          <option>Media Buyer</option>
+        </select>
+        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
       </div>
       <div className="flex items-center gap-3">
         <PerfTile label="Spend" value={formatCurrency(perf?.spend)} />
