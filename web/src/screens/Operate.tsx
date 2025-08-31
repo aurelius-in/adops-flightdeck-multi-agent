@@ -37,7 +37,7 @@ export default function Operate({ runId }: { runId: string }) {
 }
 
 function Card({ title, children }: any) {
-  return <div className="card p-4">
+  return <div className="card p-4" title="Live operations block showing current plan, pacing or signals">
     <div className="font-medium mb-2 text-brand-blue">{title}</div>
     <div>{children}</div>
   </div>;

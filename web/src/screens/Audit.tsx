@@ -10,7 +10,7 @@ export default function Audit({ runId }: { runId: string }) {
   }, [runId]);
   if (!runId && !isOfflineMode()) return <div className="text-neutral-400">Start a run in Plan.</div>;
   return (
-    <div className="card p-4">
+    <div className="card p-4" title="Final artifacts, attribution, LTV and executive summary">
       <div className="font-medium mb-2 text-brand-blue">Audit & Learn</div>
       {data?.signed && (
         <div className="mb-3">
