@@ -30,13 +30,9 @@ export default function Operate({ runId }: { runId: string }) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {blocks.map(([agent,type]) => (
         <Card key={agent} title={`${agent} • ${type}`}>
-          <div className="text-sm text-neutral-200 mb-2">
+          <div className="text-sm text-neutral-200">
             {summarize(agent as string, type as string, get(agent as string, type as string))}
           </div>
-          <details>
-            <summary className="text-xs underline text-neutral-400 cursor-pointer">View raw</summary>
-            <pre className="text-xs whitespace-pre-wrap text-neutral-300 mt-2">{JSON.stringify(get(agent as string, type as string) ?? {}, null, 2)}</pre>
-          </details>
         </Card>
       ))}
     </div>
