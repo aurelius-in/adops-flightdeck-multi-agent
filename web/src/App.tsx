@@ -24,16 +24,16 @@ export default function App() {
             {offline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
-            <button className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
+            <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
+            <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
           </div>
         </header>
         <nav className="flex gap-2">
           {(["Plan","Operate","Audit"] as Tab[]).map(t=>(
-            <button key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
+            <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
           ))}
         </nav>
-        {tab==="Plan" && <Plan onRun={setRunId}/>} 
+        {tab==="Plan" && <Plan onRun={setRunId} runId={runId}/>} 
         {tab==="Operate" && <Operate runId={runId}/>} 
         {tab==="Audit" && <Audit runId={runId}/>} 
 

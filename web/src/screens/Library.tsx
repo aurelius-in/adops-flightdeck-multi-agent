@@ -1,10 +1,10 @@
 export default function Library({ onClose, runId }:{ onClose:()=>void; runId:string}) {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-      <div className="card max-w-4xl w-full p-4">
+      <div className="card max-w-4xl w-full p-4" title="Assets and offers you can push into Plan">
         <div className="flex justify-between items-center mb-2">
           <div className="font-medium text-brand-blue">Assets & Offers</div>
-          <button className="btn" onClick={onClose}>Close</button>
+          <button className="btn" title="Close this panel" onClick={onClose}>Close</button>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
