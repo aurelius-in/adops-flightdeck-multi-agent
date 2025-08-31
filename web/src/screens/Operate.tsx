@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineEvents } from "../lib/offline";
-import { summarize } from "../lib/format";
+import { summarize, timeAgo } from "../lib/format";
 type Event = { ts:number; agent:string; type:string; data:any };
 
 export default function Operate({ runId }: { runId: string }) {
@@ -8,8 +8,17 @@ export default function Operate({ runId }: { runId: string }) {
   useEffect(() => {
     if (!runId && !isOfflineMode()) return;
     if (isOfflineMode()) {
-      loadOfflineEvents().then((e) => setEvents(e));
-      return;
+      let cancelled = false;
+      (async () => {
+        const e = await loadOfflineEvents();
+        setEvents([]);
+        for (let i = 0; i < e.length; i++) {
+          if (cancelled) break;
+          setEvents((prev) => [...prev, e[i]]);
+          await new Promise((r) => setTimeout(r, 700));
+        }
+      })();
+      return () => { cancelled = true; };
     }
     const es = new EventSource(`http://localhost:8787/api/stream/${runId}`);
     es.onmessage = (ev) => setEvents((prev) => [...prev, JSON.parse(ev.data)]);
@@ -28,13 +37,29 @@ export default function Operate({ runId }: { runId: string }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {blocks.map(([agent,type]) => (
-        <Card key={agent} title={`${agent} • ${type}`}>
-          <div className="text-sm text-neutral-200">
-            {summarize(agent as string, type as string, get(agent as string, type as string))}
-          </div>
+      {blocks.map(([agent,type]) => {
+        const last = events.filter(e => e.agent===agent && (!type || e.type===type)).slice(-1)[0];
+        return (
+          <Card key={agent} title={`${agent} • ${type}`}>
+            <div className="text-sm text-neutral-200 flex items-center justify-between">
+              <span>{summarize(agent as string, type as string, get(agent as string, type as string))}</span>
+              {last && <span className="text-[10px] text-neutral-400">{timeAgo(last.ts)}</span>}
+            </div>
+          </Card>
+        );
+      })}
+      <div className="md:col-span-2">
+        <Card title="Run timeline">
+          <ul className="text-xs text-neutral-300 space-y-1 max-h-64 overflow-auto">
+            {events.slice(-20).reverse().map((e,i)=> (
+              <li key={i} className="flex items-center justify-between gap-2">
+                <span className="truncate"><span className="text-neutral-400">{e.agent}</span> • {e.type} — {summarize(e.agent, e.type, e.data)}</span>
+                <span className="text-[10px] text-neutral-500 whitespace-nowrap">{timeAgo(e.ts)}</span>
+              </li>
+            ))}
+          </ul>
         </Card>
-      ))}
+      </div>
     </div>
   );
 }
