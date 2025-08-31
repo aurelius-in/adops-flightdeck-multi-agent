@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { font-family: "Century Gothic", AppleGothic, "URW Gothic", Arial, Helvetica, sans-serif; }
+}
+
+.card {
+  @apply bg-neutral-900 border border-neutral-800 rounded-2xl shadow-sm;
+}
+
+.btn {
+  @apply px-3 py-2 rounded-lg border border-neutral-800 bg-neutral-900 hover:border-brand-blue transition;
+}
+
+
