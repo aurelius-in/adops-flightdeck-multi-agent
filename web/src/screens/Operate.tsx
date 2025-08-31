@@ -57,24 +57,46 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card title="Experiment planner">
+        <Card title="⏱ Experiment planner">
           <div className="text-sm mb-2">{summarize("experiment","design", get("experiment","design"))}</div>
           <button className="px-3 py-2 rounded bg-white text-black">Start experiment</button>
         </Card>
-        <Card title="Budget pacer">
-          <div className="text-xs text-neutral-400 mb-1">Per-channel allocation</div>
-          <Bar data={[{label:"Meta", value: 100},{label:"Search", value: 70},{label:"TikTok", value: 30}]} />
-          <div className="flex items-center gap-2 mt-2">
-            <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
+        <Card title="⏱ Budget pacer">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <div className="text-xs text-neutral-400 mb-1">Per-channel allocation</div>
+              <Bar data={[{label:"Meta", value: 100},{label:"Search", value: 70},{label:"TikTok", value: 30}]} />
+              <div className="text-xs text-neutral-400 mt-2">KPIs</div>
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <KPI label="CPA" value="$36" />
+                <KPI label="ROAS" value="2.3" />
+                <KPI label="Spend" value="$200" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              {["Meta","Search","TikTok"].map(ch=> (
+                <div key={ch} className="text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400">{ch}</span>
+                    <span className="text-neutral-500">{ch==="Meta"?100:ch==="Search"?70:30}</span>
+                  </div>
+                  <input type="range" min={0} max={200} defaultValue={ch==="Meta"?100:ch==="Search"?70:30} />
+                </div>
+              ))}
+              <div className="flex items-center gap-2">
+                <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
+                <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Re-route</button>
+              </div>
+            </div>
           </div>
         </Card>
-        <Card title="Supply-path optimizer">
+        <Card title="⏱ Supply-path optimizer">
           <StackedBars groups={[{label:"Exchange paths", parts:[{label:"A>DSP1", value: 62},{label:"B>DSP2", value: 38}]}]} />
           <div className="flex items-center gap-2 mt-2">
             <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "spo", title: "Prune B>DSP2", impact: "-1.2% IVT" })}>Prune path</button>
           </div>
         </Card>
-        <Card title="Roadmap">
+        <Card title="⏱ Roadmap">
           <div className="grid grid-cols-4 gap-2 text-xs">
             {(["Backlog","Next","Running","Done"]).map(col=> (
               <div key={col} className="border border-neutral-800 rounded p-2">
@@ -85,7 +107,7 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
             ))}
           </div>
         </Card>
-        <Card title="Anomaly watchdog">
+        <Card title="⚠ Anomaly watchdog">
           <div className="flex items-center justify-between">
             <Sparkline points={ctrSpark} />
             <div className="flex items-center gap-2">
@@ -94,11 +116,11 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
             </div>
           </div>
         </Card>
-        <Card title="Root-cause sleuth">
+        <Card title="⚠ Root-cause sleuth">
           <Bar data={[{label:"Creative fatigue", value:34},{label:"Audience shift", value:22},{label:"Bid pressure", value:18}]} />
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Apply proposed fixes", impact: "+5% CTR" })}>Propose fixes</button>
         </Card>
-        <Card title="Negative-signal miner">
+        <Card title="⚠ Negative-signal miner">
           <div className="text-xs space-y-1">
             {["free download","kids","DIY hack"].map(term=> (
               <div key={term} className="flex items-center justify-between border border-neutral-800 rounded p-1">
@@ -108,14 +130,14 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
             ))}
           </div>
         </Card>
-        <Card title="Fraud sentinel">
+        <Card title="⚠ Fraud sentinel">
           <div className="flex items-center gap-3">
             <Donut value={1.2} total={100} />
             <div className="text-xs text-neutral-400">IVT rate ~1.2%</div>
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
         </Card>
-        <Card title="Budget officer">
+        <Card title="⏱ Budget officer">
           <div className="grid grid-cols-3 gap-2 text-xs">
             {["Meta","Search","TikTok"].map(ch=> (
               <div key={ch}>
@@ -126,7 +148,7 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "budget", title: "Save caps", impact: "Hold daily max" })}>Save caps</button>
         </Card>
-        <Card title="Change auditor" className="md:col-span-2">
+        <Card title="✔ Change auditor" className="md:col-span-2">
           <ul className="text-xs text-neutral-300 space-y-1 max-h-48 overflow-auto">
             {events.filter(e=>e.agent==="audit").slice(-10).reverse().map((e,i)=> (
               <li key={i} className="flex items-center justify-between gap-2">
@@ -155,6 +177,15 @@ function cryptoRandomId(): string {
   } catch {
     return Math.random().toString(36).slice(2);
   }
+}
+
+function KPI({ label, value }:{ label:string; value:string }) {
+  return (
+    <div className="border border-neutral-800 rounded p-2 bg-neutral-950 text-center fade-in">
+      <div className="text-[10px] text-neutral-400">{label}</div>
+      <div className="text-xs">{value}</div>
+    </div>
+  );
 }
 
 

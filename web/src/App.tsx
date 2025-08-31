@@ -36,9 +36,9 @@ export default function App() {
         </nav>
         {tab==="Plan" && <Plan onRun={(id)=>{ setRunId(id); setLastEvent("Run started"); }} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • queued action`); }} />} 
         {tab==="Operate" && <Operate runId={runId} onQueue={(item)=>setQueue(q=>[...q, item])} onEvent={(msg)=>setLastEvent(msg)} />} 
-        {tab==="Audit" && <Audit runId={runId}/>} 
+        {tab==="Audit" && <Audit runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
 
-        {showLib && <Library onClose={()=>setShowLib(false)} runId={runId}/>} 
+        {showLib && <Library onClose={()=>setShowLib(false)} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • added`); }} />} 
         {showInvestigate && <Investigate onClose={()=>setShowInvestigate(false)} runId={runId} onPropose={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
         {showQueue && <ActionQueue items={queue} onApprove={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onReject={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onClose={()=>setShowQueue(false)} />} 
       </div>
