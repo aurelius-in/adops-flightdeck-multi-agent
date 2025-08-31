@@ -20,8 +20,7 @@ export default function App() {
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
         <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div className="flex items-center gap-3">
-            <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-8 w-auto" />
-            <h1 className="text-xl font-semibold tracking-wide">AdOps Flightdeck</h1>
+            <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-16 w-auto" />
             {offline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
           </div>
           <div className="flex items-center gap-2">
