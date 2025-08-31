@@ -19,16 +19,10 @@ export default function Audit({ runId }: { runId: string }) {
         <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />
         <SummaryCard title="Executive narrative" value={String(data?.artifacts?.execNarrative ?? "")} />
       </div>
-      {data?.signed && (
-        <div className="mb-3">
-          <div className="text-sm mb-1">Artifacts</div>
-          <div className="flex flex-wrap gap-2 text-xs">
-            {Object.entries<any>(data.signed).map(([k, url]) => (
-              <a key={k} href={String(url)} target="_blank" rel="noreferrer" className="underline text-brand-blue">{k}</a>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        <button className="px-3 py-2 rounded-lg bg-white text-black">Download report pack</button>
+        <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Share read-only link</button>
+      </div>
       {/* Raw snapshot intentionally hidden for end users */}
     </div>
   );
