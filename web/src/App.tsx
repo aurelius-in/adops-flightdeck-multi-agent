@@ -9,6 +9,7 @@ import RunHeader from "./components/RunHeader";
 import ActionQueue from "./components/ActionQueue";
 import TodayDrawer from "./components/TodayDrawer";
 import RoleToolbar from "./components/RoleToolbar";
+import ContextDrawer from "./components/ContextDrawer";
 
 type Tab = "Plan"|"Operate"|"Audit";
 
@@ -19,6 +20,7 @@ export default function App() {
   const [showInvestigate, setShowInvestigate] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
   const [showToday, setShowToday] = useState(false);
+  const [showContext, setShowContext] = useState(false);
   const [lastEvent, setLastEvent] = useState<string>("");
   const [queue, setQueue] = useState<{id:string; agent:string; title:string; reason?:string; impact?:string}[]>([]);
   const offline = isOfflineMode();
@@ -28,7 +30,7 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-neutral-950 text-white role-${role.replace(/\s+/g,'').toLowerCase()}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
-        <RunHeader product="SmartWater Bottle" budget={200} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={setRole} onOpenToday={()=>setShowToday(true)} />
+        <RunHeader product={""} budget={undefined as any} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={setRole} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} />
         <div className="flex items-center gap-2">
           <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
           <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
@@ -47,6 +49,7 @@ export default function App() {
         {showInvestigate && <Investigate onClose={()=>setShowInvestigate(false)} runId={runId} onPropose={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
         {showQueue && <ActionQueue items={queue} onApprove={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onReject={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onClose={()=>setShowQueue(false)} />} 
         {showToday && <TodayDrawer role={role} onClose={()=>setShowToday(false)} onAction={(t)=>setLastEvent(`Today • ${t}`)} />}
+        {showContext && <ContextDrawer onClose={()=>setShowContext(false)} onSave={(ctx)=>{ setShowContext(false); setLastEvent(`Context set: ${ctx.product}`); }} />}
       </div>
     </div>
   );
