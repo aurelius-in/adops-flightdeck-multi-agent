@@ -10,6 +10,7 @@ import ActionQueue from "./components/ActionQueue";
 import TodayDrawer from "./components/TodayDrawer";
 import RoleToolbar from "./components/RoleToolbar";
 import ContextDrawer from "./components/ContextDrawer";
+import { Project, seedSampleProjectsIfEmpty, listProjects, getLastProjectId } from "./lib/projects";
 
 type Tab = "Plan"|"Operate"|"Audit";
 
@@ -27,8 +28,11 @@ export default function App() {
   const perf = useMemo(()=>({ spend: 0, conversions: 0, roas: undefined as any, cpa: undefined as any }), []);
   const [role, setRole] = useState<string>("Ad Rep");
   const [context, setContext] = useState<{product?:string; audience?:string; budget?:number}>({});
+  const [project, setProject] = useState<Project|null>(null);
 
   useEffect(() => {
+    try { seedSampleProjectsIfEmpty(); } catch {}
+    try { const last = getLastProjectId(); const list = listProjects(); const sel = list.find(p=>p.id===last) || list[0] || null; if (sel) { setProject(sel); setContext({ product: sel.product, audience: sel.audience, budget: sel.dailyBudget }); } } catch {}
     try {
       const savedRole = localStorage.getItem("af_role");
       if (savedRole) setRole(savedRole);
@@ -40,7 +44,7 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-neutral-950 text-white role-${role.replace(/\s+/g,'').toLowerCase()}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
-        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} />
+        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} onProjectSelect={(p)=>{ setProject(p); setContext({ product: p.product, audience: p.audience, budget: p.dailyBudget }); }} />
         <div className="flex items-center gap-2">
           <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
           <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>

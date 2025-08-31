@@ -39,8 +39,8 @@ export const roleConfig: Record<UserRole, RoleConfig> = {
     audit: { showAttribution:true, attributionWhatIf:true, showLTV:true, showReport:true, showExec:false, compactAttribution:false }
   },
   "Executive": {
-    planAgents: ["Audience DNA","Offer composer","Creative brief","Creative variants"],
-    operateBlocks: [["experiment","design"],["pacing","plan"],["roadmap","queue"],["audit","changes"]],
+    planAgents: ["Audience DNA","Warm start","Offer composer","Creative brief","Creative variants"],
+    operateBlocks: [["experiment","design"],["pacing","plan"],["anomaly","tick"],["rootcause","analysis"],["negatives","list"],["budget","caps"],["roadmap","queue"],["audit","changes"]],
     audit: { showAttribution:true, attributionWhatIf:true, showLTV:true, showReport:true, showExec:true, compactAttribution:false }
   }
 };

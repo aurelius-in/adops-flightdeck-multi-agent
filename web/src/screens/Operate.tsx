@@ -5,7 +5,7 @@ import { Sparkline, Bar, Donut, StackedBars } from "../lib/charts";
 import { allowedOperateBlocks } from "../lib/roles";
 type Event = { ts:number; agent:string; type:string; data:any };
 
-export default function Operate({ role, runId, onQueue, onEvent }:{ role?: string; runId: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
+export default function Operate({ role, runId, projectId, onQueue, onEvent }:{ role?: string; runId: string; projectId?: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [speed, setSpeed] = useState<number>(1);
   const offline = isOfflineMode();

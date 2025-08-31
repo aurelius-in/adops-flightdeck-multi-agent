@@ -1,4 +1,6 @@
 import { formatCurrency } from "../lib/format";
+import ProjectSwitcher from "./ProjectSwitcher";
+import type { Project } from "../lib/projects";
 
 export type PerformanceSummary = {
   spend?: number;
@@ -19,7 +21,8 @@ export default function RunHeader({
   role,
   onRoleChange,
   onOpenToday,
-  onOpenContext
+  onOpenContext,
+  onProjectSelect
 }:{
   product?: string;
   budget?: number;
@@ -33,6 +36,7 @@ export default function RunHeader({
   onRoleChange: (r:string)=>void;
   onOpenToday: ()=>void;
   onOpenContext: ()=>void;
+  onProjectSelect?: (p: Project)=>void;
 }) {
   return (
     <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -41,6 +45,7 @@ export default function RunHeader({
         {/* Branding text removed to avoid redundancy with logo */}
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
+        <ProjectSwitcher onSelect={(p)=>onProjectSelect?.(p)} />
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenContext}>Context</button>
         <div className="ml-2 text-xs">
           <div className="text-neutral-400 mb-0.5">User Role</div>
