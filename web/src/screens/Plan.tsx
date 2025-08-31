@@ -7,6 +7,7 @@ export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runI
   const [budget, setBudget] = useState(200);
   const [rules, setRules] = useState("No medical claims. Friendly, confident tone.");
   const [snapshot, setSnapshot] = useState<any>(null);
+  const [persona, setPersona] = useState<"Ad Rep"|"Executive">("Ad Rep");
 
   async function start() {
     if (isOfflineMode()) { onRun("offline-run"); return; }
@@ -56,6 +57,25 @@ export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runI
       </div>
       <div className="card p-4 flex items-end">
         <button title="Kick off agent workflow for this product and audience" className="w-full px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run</button>
+      </div>
+      <div className="lg:col-span-3 card p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="font-medium text-brand-blue">Key outcomes</div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-neutral-400">View for</span>
+            <button className={`px-2 py-1 rounded border ${persona==="Ad Rep"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Ad Rep")}>Ad Rep</button>
+            <button className={`px-2 py-1 rounded border ${persona==="Executive"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Executive")}>Executive</button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <OutcomeCard title="Audiences" value={formatAudience(snapshot)} />
+          <OutcomeCard title="Top offer" value={formatOffer(snapshot)} />
+          {persona==="Ad Rep" ? (
+            <OutcomeCard title="Creatives" value={formatCreative(snapshot)} />
+          ) : (
+            <OutcomeCard title="Budget & KPI" value={formatBudgetKPI(snapshot, budget)} />
+          )}
+        </div>
       </div>
       <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} runId={runId} snapshot={snapshot} />
       <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} runId={runId} snapshot={snapshot} />
@@ -172,6 +192,43 @@ function summarizePlan(agentLabel: string, a: Record<string, any>): string | "" 
   } catch {
     return "";
   }
+}
+
+function OutcomeCard({ title, value }:{ title:string; value:string }) {
+  return (
+    <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950" title="High-level outcome for quick review">
+      <div className="text-xs text-neutral-400 mb-1">{title}</div>
+      <div className="text-sm">{value || ("Run to populate.")}</div>
+    </div>
+  );
+}
+
+function formatAudience(snapshot?: any): string {
+  const a = snapshot?.artifacts?.audienceDNA;
+  if (!Array.isArray(a) || a.length===0) return "";
+  const top = a[0];
+  return `${top.name} • ${top.size?.toLocaleString?.()} ppl`;
+}
+
+function formatOffer(snapshot?: any): string {
+  const o = snapshot?.artifacts?.offers;
+  if (!Array.isArray(o) || o.length===0) return "";
+  const top = o[0];
+  return `${top.label} • iROAS ${top.predicted_iROAS}`;
+}
+
+function formatCreative(snapshot?: any): string {
+  const c = snapshot?.artifacts?.creatives;
+  if (!Array.isArray(c) || c.length===0) return "";
+  return `${c[0].headline} • ${c[0].cta}`;
+}
+
+function formatBudgetKPI(snapshot?: any, budget?: number): string {
+  const pacing = snapshot?.artifacts?.pacing;
+  const total = Array.isArray(pacing) ? pacing.reduce((s:number,x:any)=>s+(x.dailyBudget||0),0) : (budget||0);
+  const report = snapshot?.artifacts?.report;
+  const iroas = report?.iROAS;
+  return `Daily budget ${total} • iROAS ${iroas ?? "—"}`;
 }
 
 function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
