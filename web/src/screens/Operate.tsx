@@ -164,7 +164,7 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
 }
 
 function Card({ title, children, className }: any) {
-  return <div className={`card p-4 ${className||""}`} title="Live operations block">
+  return <div className={`card p-4 hover-card fade-in ${className||""}`} title="Live operations block">
     <div className="font-medium mb-2 text-brand-blue">{title}</div>
     <div>{children}</div>
   </div>;

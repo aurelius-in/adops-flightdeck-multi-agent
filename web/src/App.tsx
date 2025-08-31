@@ -26,7 +26,7 @@ export default function App() {
   const [role, setRole] = useState<string>("Ad Rep");
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className={`min-h-screen bg-neutral-950 text-white role-${role.replace(/\s+/g,'').toLowerCase()}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
         <RunHeader product="SmartWater Bottle" budget={200} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={setRole} onOpenToday={()=>setShowToday(true)} />
         <div className="flex items-center gap-2">
