@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { summarize } from "../lib/format";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
+import { auditPreferences } from "../lib/roles";
 
 export default function Audit({ role, runId, onQueue }: { role?: string; runId: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
   const [data, setData] = useState<any>({});
@@ -10,14 +11,15 @@ export default function Audit({ role, runId, onQueue }: { role?: string; runId: 
     fetch(`http://localhost:8787/api/runs/${runId}`).then(r=>r.json()).then(setData);
   }, [runId]);
   if (!runId && !isOfflineMode()) return <div className="text-neutral-400">Start a run in Plan.</div>;
+  const prefs = auditPreferences(role).audit;
   return (
     <div className="card p-4" title="Final artifacts, attribution, LTV and executive summary">
       <div className="font-medium mb-2 text-brand-blue">Audit & Learn</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <AttributionPanel attrib={data?.artifacts?.attribution} onQueue={onQueue} compact={role==="Ad Rep"} />
-        <LTVPanel ltv={data?.artifacts?.ltv} />
-        <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />
-        <SummaryCard title="Executive narrative" value={String(data?.artifacts?.execNarrative ?? "")} />
+        {prefs.showAttribution && <AttributionPanel attrib={data?.artifacts?.attribution} onQueue={onQueue} compact={prefs.compactAttribution} whatIf={prefs.attributionWhatIf} />}
+        {prefs.showLTV && <LTVPanel ltv={data?.artifacts?.ltv} />}
+        {prefs.showReport && <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />}
+        {prefs.showExec && <SummaryCard title="Executive narrative" value={String(data?.artifacts?.execNarrative ?? "")} />}
       </div>
       <div className="flex items-center gap-2">
         <button className="px-3 py-2 rounded-lg bg-white text-black">Download report pack</button>
@@ -37,7 +39,7 @@ function SummaryCard({ title, value }:{ title:string; value:string }) {
   );
 }
 
-function AttributionPanel({ attrib, onQueue, compact }:{ attrib:any; onQueue?: (item:any)=>void; compact?: boolean }) {
+function AttributionPanel({ attrib, onQueue, compact, whatIf }:{ attrib:any; onQueue?: (item:any)=>void; compact?: boolean; whatIf?: boolean }) {
   const credit = attrib?.credit ?? [];
   const channels = credit.map((c:any)=>c.channel);
   const [from, setFrom] = useState<string>(channels?.[0] || "");
@@ -53,7 +55,7 @@ function AttributionPanel({ attrib, onQueue, compact }:{ attrib:any; onQueue?: (
           <AttributionBar key={c.channel} label={c.channel} low={c.low ?? Math.max(0,c.point-0.07)} point={c.point ?? 0} high={c.high ?? Math.min(1,c.point+0.07)} />
         ))}
       </div>
-      {channels.length>=2 && !compact && (
+      {channels.length>=2 && whatIf && !compact && (
         <div className="mt-3 border-t border-neutral-800 pt-2">
           <div className="text-xs text-neutral-400 mb-1">What‑if reallocation</div>
           <div className="flex items-center gap-2 text-xs mb-1">

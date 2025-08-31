@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Plan from "./screens/Plan";
 import Operate from "./screens/Operate";
 import Audit from "./screens/Audit";
@@ -28,10 +28,19 @@ export default function App() {
   const [role, setRole] = useState<string>("Ad Rep");
   const [context, setContext] = useState<{product?:string; audience?:string; budget?:number}>({});
 
+  useEffect(() => {
+    try {
+      const savedRole = localStorage.getItem("af_role");
+      if (savedRole) setRole(savedRole);
+      const savedCtx = localStorage.getItem("af_ctx");
+      if (savedCtx) setContext(JSON.parse(savedCtx));
+    } catch {}
+  }, []);
+
   return (
     <div className={`min-h-screen bg-neutral-950 text-white role-${role.replace(/\s+/g,'').toLowerCase()}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
-        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={setRole} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} />
+        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} />
         <div className="flex items-center gap-2">
           <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
           <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
@@ -50,7 +59,7 @@ export default function App() {
         {showInvestigate && <Investigate onClose={()=>setShowInvestigate(false)} runId={runId} onPropose={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
         {showQueue && <ActionQueue items={queue} onApprove={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onReject={(id)=>setQueue(q=>q.filter(x=>x.id!==id))} onClose={()=>setShowQueue(false)} />} 
         {showToday && <TodayDrawer role={role} onClose={()=>setShowToday(false)} onAction={(t)=>setLastEvent(`Today • ${t}`)} />}
-        {showContext && <ContextDrawer initialProduct={context.product} initialAudience={context.audience} onClose={()=>setShowContext(false)} onSave={(ctx)=>{ setShowContext(false); setContext(ctx); setLastEvent(`Context set: ${ctx.product}`); }} />}
+        {showContext && <ContextDrawer initialProduct={context.product} initialAudience={context.audience} onClose={()=>setShowContext(false)} onSave={(ctx)=>{ setShowContext(false); setContext(ctx); try { localStorage.setItem("af_ctx", JSON.stringify(ctx)); } catch {}; setLastEvent(`Context set: ${ctx.product}`); }} />}
       </div>
     </div>
   );
