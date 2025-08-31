@@ -39,7 +39,7 @@ export default function RunHeader({
       <div className="flex items-center gap-3">
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
         {/* Branding text removed to avoid redundancy with logo */}
-        {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
+        {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenContext}>Context</button>
         <div className="ml-2 text-xs">
@@ -54,7 +54,7 @@ export default function RunHeader({
         </div>
         {product && (
           <div className="ml-3 text-xs border border-neutral-800 rounded px-2 py-1 bg-neutral-900" title="Current context">
-            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {formatCurrency(budget)}</span>}
+            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(budget)}</span>}
           </div>
         )}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
