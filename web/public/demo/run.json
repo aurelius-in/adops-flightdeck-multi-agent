@@ -1,11 +1,48 @@
 {
   "artifacts": {
-    "audienceDNA": [{"name":"HIIT Heroes","ltv":280}],
-    "offers": [{"label":"Bundle x2","predicted_iROAS":2.1}],
-    "creatives": [{"headline":"Proven hydration for busy days","cta":"Start your trial"}],
-    "experiment": {"arms":3,"metric":"iROAS"},
-    "attribution": {"credit":[{"channel":"Meta","point":0.42}]},
-    "report": {"iROAS":2.4,"recommendation":"Scale variant 1"}
+    "audienceDNA": [
+      {"name":"HIIT Heroes","size":42000,"ltv":280,"affinities":["Wearables","Electrolytes"],"angle":"performance & recovery"},
+      {"name":"Desk Athletes","size":67000,"ltv":190,"affinities":["Posture","Focus"],"angle":"habit nudges"}
+    ],
+    "warmStart": {"priors":[{"category":"Smart Hydration","confidence":0.78}],"initialBids":{"meta":1.2,"search":1.5,"tiktok":0.9}},
+    "offers": [
+      {"label":"Bundle x2","marginFloor":0.35,"predicted_iROAS":2.1},
+      {"label":"25% Off 1st","marginFloor":0.25,"predicted_iROAS":1.8}
+    ],
+    "assets": [
+      {"id":"img01","tags":["blue","outdoor","bottle"],"palette":["#1E3A8A","#93C5FD"]},
+      {"id":"img02","tags":["gym","closeup","sweat"],"palette":["#111827","#F59E0B"]}
+    ],
+    "creativeBrief": {"promise":"Hydration you can measure","tone":"confident, friendly","angles":["performance","habit"],"ctAs":["Start your trial","Track your hydration"]},
+    "creatives": [
+      {"headline":"Proven hydration for busy days","primaryText":"See your intake in real time.","cta":"Start your trial","imagePrompt":"athlete tying shoes, dawn run"},
+      {"headline":"Make hydration a habit","primaryText":"Smart reminders that adapt to your day.","cta":"Get started","imagePrompt":"desk worker with sleek bottle, soft light"}
+    ],
+    "generation": {"gen":2,"variants":[{"headline":"Proven hydration for busy days","note":"Gen2"}]},
+    "tone": [{"tone":"confident, friendly","readingGrade":6}],
+    "compliance": [{"idx":0,"pass":true,"fixes":"See your intake in real time."}],
+    "thumbstop": {"best":{"frame":0,"stopProb":0.71,"caption":"Lead with benefit"}},
+    "localization": [{"lang":"es","headline":"Hidratación comprobada","cta":"Empieza tu prueba"}],
+    "a11y": [{"variant":0,"alt":"Product photo variant 0 showing target context"}],
+    "style": {"prompts":["athlete tying shoes, dawn run, brand palette compliant, high-contrast"]},
+    "voiceover": [{"seconds":6,"script":"Hydration you can measure. Smarter reminders. Better days."}],
+    "ugc": ["Hook: tired at desk","Problem: headaches","Solution: smart bottle","Proof: app view","CTA: Start trial"],
+    "promptPalette": {"tones":["confident","friendly","evidence-based"],"claims":["no medical guarantees"],"emojis":false},
+    "experiment": {"arms":3,"metric":"iROAS","minRuntimeHours":24,"stopRule":"2x std err over baseline"},
+    "pacing": [{"arm":0,"dailyBudget":100,"bid":0.9},{"arm":1,"dailyBudget":100,"bid":1.0}],
+    "spo": {"allow":["ExchangeA>DSP1"],"deny":["ExchangeB>DSP2"],"detail":[{"path":"ExchangeA>DSP1","win":0.62,"ivt":0.01}]},
+    "roadmap": [{"name":"Frame test","impact":"high","ttd":"short"}],
+    "history": [{"t":0,"metrics":[{"impr":180,"clicks":6,"spend":2.5,"ctr":0.033}],"actions":[{"t":0,"variant":0,"action":"boost","reason":"High CTR"}]}],
+    "rootcause": {"suspects":[{"factor":"Creative Fatigue","weight":0.34,"action":"Rotate Gen2 headline"}]},
+    "negatives": ["free download","kids","DIY hack"],
+    "fraud": {"rate":0.012,"sources":["datacenter-ip","click-farm-suspect"],"action":"exclude segment X"},
+    "budget": {"dailyMax":200,"perChannel":{"meta":100,"search":70,"tiktok":30}},
+    "auditLog": [{"at":1700000000000,"user":"system","change":"Paused variant 2 due to CTR < 1.5%"}],
+    "attribution": {"credit":[{"channel":"Meta","point":0.42,"low":0.35,"high":0.5}],"realloc":[{"from":"TikTok","to":"Meta","pct":10}]},
+    "ltv": [{"cohort":"HIIT Heroes","ltv":280},{"cohort":"Desk Athletes","ltv":190}],
+    "report": {"iROAS":2.4,"recommendation":"Scale variant 1, pause 2","artifacts":["audienceDNA","offers","creatives","experiment","attribution"]},
+    "execNarrative": "Performance stabilized with improved CTR on Gen2 creatives; reallocating 10% to Meta increases iROAS.",
+    "playbook": ["Hook with benefit first","Guard claims; avoid guarantees","Prioritize HIIT Heroes + Desk Athletes"]
   }
 }
 
