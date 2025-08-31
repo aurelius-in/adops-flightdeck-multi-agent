@@ -2,13 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { isOfflineMode, loadOfflineEvents } from "../lib/offline";
 import { summarize, timeAgo } from "../lib/format";
 import { Sparkline, Bar, Donut, StackedBars } from "../lib/charts";
+import { listRuns } from "../lib/projects";
 import { allowedOperateBlocks } from "../lib/roles";
 type Event = { ts:number; agent:string; type:string; data:any };
 
-export default function Operate({ role, runId, projectId, onQueue, onEvent }:{ role?: string; runId: string; projectId?: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
+export default function Operate({ role, runId, projectId, onQueue, onEvent, onOpenRun }:{ role?: string; runId: string; projectId?: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; onOpenRun?:(id:string)=>void; }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [speed, setSpeed] = useState<number>(1);
   const offline = isOfflineMode();
+  const runs = useMemo(()=> projectId? listRuns(projectId).slice(0,5) : [], [projectId]);
 
   useEffect(() => {
     if (!runId && !offline) return;
@@ -50,6 +52,20 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent }:{ r
 
   return (
     <div className="space-y-4">
+      {projectId && runs.length>0 && (
+        <div className="card p-3" title="Recent runs for this project">
+          <div className="text-xs text-neutral-400 mb-2">Run History</div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            {runs.map(r=> (
+              <button key={r.id} className={`border border-neutral-800 rounded p-2 bg-neutral-950 text-left ${r.id===runId?"border-brand-blue/60":"hover-card"}`} onClick={()=>onOpenRun?.(r.id)}>
+                <div className="text-[11px] text-neutral-400">{new Date(r.startedAt).toLocaleDateString()}</div>
+                <div className="text-xs">iROAS {r.iROAS ?? "-"}</div>
+                <div className="text-xs">CPA {typeof r.cpa==="number"?`$${r.cpa}`:"-"}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {offline && (
         <div className="card p-3 flex items-center gap-3" title="Offline replay controls">
           <div className="text-xs text-neutral-400">Replay speed</div>
