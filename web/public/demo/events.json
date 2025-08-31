@@ -10,7 +10,12 @@
   { "ts": 9, "agent": "spo", "type": "routes", "data": {"allow":["ExchangeA>DSP1"]} },
   { "ts": 10, "agent": "anomaly", "type": "tick", "data": {"t":0,"metrics":[{"impr":180,"ctr":0.03}] } },
   { "ts": 11, "agent": "rootcause", "type": "analysis", "data": {"suspects":[{"factor":"Creative Fatigue","weight":0.34}]} },
-  { "ts": 12, "agent": "report", "type": "summary", "data": {"iROAS":2.4} }
+  { "ts": 12, "agent": "roadmap", "type": "queue", "data": [{"name":"Frame test","impact":"high"},{"name":"Offer type","impact":"med"}] },
+  { "ts": 13, "agent": "negatives", "type": "list", "data": ["free download","kids","DIY hack"] },
+  { "ts": 14, "agent": "fraud", "type": "ivtrate", "data": {"rate":0.012,"sources":["datacenter-ip"]} },
+  { "ts": 15, "agent": "budget", "type": "caps", "data": {"dailyMax":200,"perChannel":{"meta":100,"search":70,"tiktok":30}} },
+  { "ts": 16, "agent": "audit", "type": "changes", "data": [{"at": 1700000000000, "user":"system","change":"Paused variant 2 due to CTR < 1.5%"}] },
+  { "ts": 17, "agent": "report", "type": "summary", "data": {"iROAS":2.4} }
 ]
 
 
