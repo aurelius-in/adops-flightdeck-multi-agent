@@ -79,7 +79,10 @@ function AgentCard({ agent, runId, snapshot }:{agent:string; runId?: string; sna
   const summary = summarizePlan(agent, s);
   return (
     <div title="Agent module that populates this area during the run" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
-      <div className="text-sm font-medium">{agent}</div>
+      <div className="text-sm font-medium flex items-center justify-between">
+        <span>{agent}</span>
+        {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
+      </div>
       <div className="text-xs text-neutral-300 mt-1">{runId && summary ? summary : (runId?"Populated.":"Populates after run begins.")}</div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineEvents } from "../lib/offline";
-import { summarize } from "../lib/format";
+import { summarize, timeAgo } from "../lib/format";
 type Event = { ts:number; agent:string; type:string; data:any };
 
 export default function Operate({ runId }: { runId: string }) {
@@ -37,13 +37,17 @@ export default function Operate({ runId }: { runId: string }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {blocks.map(([agent,type]) => (
-        <Card key={agent} title={`${agent} • ${type}`}>
-          <div className="text-sm text-neutral-200">
-            {summarize(agent as string, type as string, get(agent as string, type as string))}
-          </div>
-        </Card>
-      ))}
+      {blocks.map(([agent,type]) => {
+        const last = events.filter(e => e.agent===agent && (!type || e.type===type)).slice(-1)[0];
+        return (
+          <Card key={agent} title={`${agent} • ${type}`}>
+            <div className="text-sm text-neutral-200 flex items-center justify-between">
+              <span>{summarize(agent as string, type as string, get(agent as string, type as string))}</span>
+              {last && <span className="text-[10px] text-neutral-400">{timeAgo(last.ts)}</span>}
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }

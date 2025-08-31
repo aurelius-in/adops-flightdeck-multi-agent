@@ -70,4 +70,16 @@ export function summarize(agent: string, type: string | undefined, data: any): s
   }
 }
 
+export function timeAgo(ts?: number): string {
+  if (!ts) return "";
+  const d = Date.now() - ts;
+  if (d < 1000) return "now";
+  const s = Math.floor(d / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return `${h}h ago`;
+}
+
 
