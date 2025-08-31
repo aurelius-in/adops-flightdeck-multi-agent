@@ -86,11 +86,25 @@ app.get("/api/readyz", async () => ({ ok: true }));
 
 // Approvals API: gate platform writes
 app.post("/api/actions/:runId", async (req: any, reply) => {
+  if (config.JWT_SECRET) {
+    try { await req.jwtVerify(); } catch { reply.code(401); return { error: "unauthorized" }; }
+  }
   const { runId } = req.params;
   const { actionId, approved, payload } = req.body || {};
   if (!actionId || typeof approved !== "boolean") { reply.code(400); return { error: "actionId and approved required" }; }
   await recordAction({ runId, actionId, approved, at: Date.now(), payload, approvedBy: "user" });
   return { ok: true };
+});
+
+// Not found
+app.setNotFoundHandler((req, reply) => {
+  reply.code(404).send({ error: "not_found", path: req.url });
+});
+
+// Error handler
+app.setErrorHandler((err, req, reply) => {
+  req.log.error({ err }, "request_error");
+  reply.code(500).send({ error: "internal_error" });
 });
 
 app.addHook("onClose", async () => {

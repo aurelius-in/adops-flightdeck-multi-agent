@@ -1,5 +1,6 @@
 import { Agent, AgentContext } from "../types";
 import { mkEvent, sleep } from "../utils";
+import { putArtifact } from "../store";
 
 const rand = (min:number, max:number) => +(min + Math.random()*(max-min)).toFixed(2);
 
@@ -7,6 +8,8 @@ const rand = (min:number, max:number) => +(min + Math.random()*(max-min)).toFixe
 function write(ctx: AgentContext, key: string, data: any, agent: string, type="data") {
   ctx.artifacts[key] = data;
   ctx.emit(mkEvent(agent, type, data));
+  // best-effort persist; don't block agent
+  putArtifact(ctx.runId, key, data).catch(() => {});
 }
 
 // ---------------------- PLAN: Target & Offer ----------------------
