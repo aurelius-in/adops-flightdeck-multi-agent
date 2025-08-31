@@ -9,7 +9,7 @@ type ActionRecord = { runId: string; actionId: string; approved: boolean; approv
 type IdemRecord = { key: string; runId: string; at: number };
 
 const ddb = (app.DYNAMO_RUNS_TABLE || app.DYNAMO_ACTIONS_TABLE || app.DYNAMO_IDEMPOTENCY_TABLE)
-  ? new DynamoDBDocumentClient(new DynamoDBClient({}))
+  ? DynamoDBDocumentClient.from(new DynamoDBClient({}))
   : null;
 const s3 = app.S3_BUCKET ? new S3Client({}) : null;
 
