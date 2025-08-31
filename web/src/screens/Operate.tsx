@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+import { isMockMode, loadMockEvents } from "../lib/mock";
 type Event = { ts:number; agent:string; type:string; data:any };
 
 export default function Operate({ runId }: { runId: string }) {
   const [events, setEvents] = useState<Event[]>([]);
   useEffect(() => {
-    if (!runId) return;
+    if (!runId && !isMockMode()) return;
+    if (isMockMode()) {
+      loadMockEvents().then((e) => setEvents(e));
+      return;
+    }
     const es = new EventSource(`http://localhost:8787/api/stream/${runId}`);
     es.onmessage = (ev) => setEvents((prev) => [...prev, JSON.parse(ev.data)]);
     return () => es.close();
