@@ -42,13 +42,16 @@ export default function RunHeader({
         </div>
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
-        <select className="ml-2 bg-neutral-950 border border-neutral-800 rounded p-1 text-xs" value={role} onChange={e=>onRoleChange(e.target.value)}>
-          <option>Ad Rep</option>
-          <option>Executive</option>
-          <option>Creative</option>
-          <option>Compliance</option>
-          <option>Media Buyer</option>
-        </select>
+        <div className="ml-2 text-xs">
+          <div className="text-neutral-400 mb-0.5">User Role</div>
+          <select className="bg-neutral-950 border border-neutral-800 rounded p-1" value={role} onChange={e=>onRoleChange(e.target.value)}>
+            <option>Ad Rep</option>
+            <option>Executive</option>
+            <option>Creative</option>
+            <option>Compliance</option>
+            <option>Media Buyer</option>
+          </select>
+        </div>
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
       </div>
       <div className="flex items-center gap-3">

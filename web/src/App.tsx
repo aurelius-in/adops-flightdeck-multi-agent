@@ -8,6 +8,7 @@ import { isOfflineMode } from "./lib/offline";
 import RunHeader from "./components/RunHeader";
 import ActionQueue from "./components/ActionQueue";
 import TodayDrawer from "./components/TodayDrawer";
+import RoleToolbar from "./components/RoleToolbar";
 
 type Tab = "Plan"|"Operate"|"Audit";
 
@@ -32,6 +33,7 @@ export default function App() {
           <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
           <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
         </div>
+        <RoleToolbar role={role} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • queued action`); }} />
         <nav className="flex gap-2">
           {(["Plan","Operate","Audit"] as Tab[]).map(t=>(
             <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
