@@ -39,8 +39,8 @@ export default function RunHeader({
       <div className="flex items-center gap-3">
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
         <div className="text-sm">
-          <div className="font-medium">{product || "No context set"}</div>
-          <div className="text-xs text-neutral-400">Daily budget {formatCurrency(budget)} {runId && <span className="ml-2 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block pulse-dot"/> live</span>}</div>
+          <div className="font-medium">AdOps Flightdeck</div>
+          <div className="text-xs text-neutral-400">{runId ? "Active run" : "Idle"} {runId && <span className="ml-2 inline-flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block pulse-dot"/> live</span>}</div>
         </div>
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">simulation</span>}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
@@ -55,6 +55,11 @@ export default function RunHeader({
             <option>Media Buyer</option>
           </select>
         </div>
+        {product && (
+          <div className="ml-3 text-xs border border-neutral-800 rounded px-2 py-1 bg-neutral-900" title="Current context">
+            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {formatCurrency(budget)}</span>}
+          </div>
+        )}
         <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
       </div>
       <div className="flex items-center gap-3">

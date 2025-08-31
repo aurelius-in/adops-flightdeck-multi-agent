@@ -55,8 +55,12 @@ export default function Plan({ onRun, runId, onQueue, role }: { onRun: (id: stri
           </div>
         </div>
       </div>
-      <div className="card p-4 flex items-end">
-        <button title="Kick off agent workflow for this product and audience" className="w-full px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run</button>
+      <div className="card p-4">
+        <div className="text-xs text-neutral-400 mb-2">Quick actions</div>
+        <div className="flex gap-2">
+          <button title="Kick off agent workflow for this product and audience" className="flex-1 px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run</button>
+          <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Save draft</button>
+        </div>
       </div>
       <div className="lg:col-span-3 card p-4">
         <div className="flex items-center justify-between mb-2">
