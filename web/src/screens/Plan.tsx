@@ -257,11 +257,33 @@ function cryptoRandomId(): string {
   try { return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,"0")).join(""); } catch { return Math.random().toString(36).slice(2); }
 }
 
+function iconForAgent(agent:string): string {
+  const m: Record<string,string> = {
+    "Audience DNA": "⚑",
+    "Warm start": "⚑",
+    "Offer composer": "⚑",
+    "Asset librarian": "✎",
+    "Creative brief": "✎",
+    "Creative variants": "✎",
+    "Gene splicer": "✎",
+    "Tone balancer": "✎",
+    "Compliance review": "⚠",
+    "Thumb‑stop": "✎",
+    "Localization": "✎",
+    "Accessibility": "✎",
+    "Style prompts": "✎",
+    "Voiceover scripts": "✎",
+    "UGC outline": "✎",
+    "Prompt palette": "✎",
+  };
+  return m[agent] || "";
+}
+
 function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const a = snapshot?.artifacts || {};
   const header = (
     <div className="text-sm font-medium flex items-center justify-between mb-2">
-      <span>{agent}</span>
+      <span>{iconForAgent(agent)} {agent}</span>
       {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
     </div>
   );
