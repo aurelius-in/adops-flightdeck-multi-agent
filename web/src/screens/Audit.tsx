@@ -29,7 +29,10 @@ export default function Audit({ runId }: { runId: string }) {
           </div>
         </div>
       )}
-      <pre className="text-xs whitespace-pre-wrap text-neutral-300">{JSON.stringify(data, null, 2)}</pre>
+      <details>
+        <summary className="text-xs underline text-neutral-400 cursor-pointer">View full snapshot</summary>
+        <pre className="text-xs whitespace-pre-wrap text-neutral-300 mt-2">{JSON.stringify(data, null, 2)}</pre>
+      </details>
     </div>
   );
 }
