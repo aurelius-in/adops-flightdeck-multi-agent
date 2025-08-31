@@ -1,6 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config as app } from "./config";
 
 type RunRecord = { runId: string; artifacts: Record<string, any>; createdAt: number };
@@ -44,6 +45,12 @@ export async function putArtifact(runId: string, key: string, data: any): Promis
 export async function listArtifacts(runId: string): Promise<Record<string, any>> {
   const rec = await getRun(runId);
   return rec?.artifacts ?? {};
+}
+
+export async function getArtifactSignedUrl(runId: string, key: string): Promise<string | undefined> {
+  if (!s3 || !app.S3_BUCKET) return undefined;
+  const cmd = new GetObjectCommand({ Bucket: app.S3_BUCKET, Key: `${runId}/${key}.json` });
+  return getSignedUrl(s3, cmd, { expiresIn: 300 });
 }
 
 export async function recordAction(a: ActionRecord): Promise<void> {
