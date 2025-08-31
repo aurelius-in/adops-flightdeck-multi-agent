@@ -20,6 +20,55 @@ Media teams lose time stitching tools, exporting CSVs, and arguing over attribut
 
 ---
 
+## Agent catalog (31 agents)
+
+Each agent maps to a step in the workflow and a surface in the UI.
+
+### Plan — Target & Offer
+- **audienceDNA**: Derives privacy-safe cohorts and angles from product + audience inputs. UI: Plan → Target & Offer card; artifacts visible in Audit.
+- **warmStart**: Surfaces prior winning categories and suggested initial bids by channel. UI: Plan → Target & Offer; influences Operate → pacing plan.
+- **offerComposer**: Proposes margin-aware offers with predicted iROAS. UI: Plan → Target & Offer and Library → Offer Catalog.
+- **assetLibrarian**: Suggests on-brand assets with palette metadata. UI: Plan → Target & Offer and Library → Asset Librarian.
+- **creativeBrief**: Generates a single source-of-truth brief (promise, tone, angles, CTAs). UI: Plan → Target & Offer; referenced by creative agents.
+
+### Plan — Creative & Guardrails
+- **creativeGenerator**: Produces initial multi-variant ad copy and image prompts. UI: Plan → Creative & Guardrails card group.
+- **geneSplicer**: Evolves variants under constraints (e.g., swap headlines, preserve tone). UI: Plan → Creative & Guardrails; lineage referenced in Operate.
+- **toneBalancer**: Normalizes voice (confident, friendly) and reading grade. UI: Plan → Creative & Guardrails.
+- **complianceSentinel**: Flags risky claims and proposes compliant rewrites. UI: Plan → Creative & Guardrails; uses `policies/brand_guide.md` and banned list.
+- **thumbStop**: Scores opening frames and suggests first captions. UI: Plan → Creative & Guardrails; highest-score shown first.
+- **multilingualLocalizer**: Creates localized copy variants. UI: Plan → Creative & Guardrails; variants available to Operate.
+- **accessibilityAgent**: Writes alt text and accessibility notes. UI: Plan → Creative & Guardrails and Library.
+- **styleTransfer**: Standardizes visual prompts to brand palette. UI: Plan → Creative & Guardrails; feeds asset generation systems.
+- **voiceoverScript**: Produces VO scripts for short-form. UI: Plan → Creative & Guardrails.
+- **ugcOutline**: Drafts UGC story beats for creators. UI: Plan → Creative & Guardrails and Library.
+- **promptPalette**: Central prompt tone/claims rules consumed by other agents. UI: Plan → Creative & Guardrails; policy surfaced in Audit.
+
+### Operate — Pacing & Delivery
+- **experimentPlanner**: Defines arms, metric and stop rules. UI: Operate → experiment • design block.
+- **spendPacer**: Allocates daily budgets and bids across arms/channels. UI: Operate → pacing • plan block.
+- **supplyPathOptimizer**: Recommends SPO allow/deny routes. UI: Operate → spo • routes block.
+- **roadmapPlanner**: Maintains prioritized learning backlog. UI: Operate → roadmap • queue block.
+
+### Operate — Watch & Respond
+- **anomalyWatchdog**: Streams ticks with metrics and auto actions (boost/pause). UI: Operate → anomaly • tick block (SSE live updates).
+- **rootCauseSleuth**: Ranks likely factors behind performance shifts with proposed fixes. UI: Operate → rootcause • analysis block and Investigate overlay.
+- **negativeSignalMiner**: Extracts exclusion phrases/segments. UI: Operate → negatives • list block.
+- **fraudSentinel**: Surfaces IVT rate and sources; proposes exclusions. UI: Operate → fraud • ivtrate block.
+- **budgetOfficer**: Enforces daily and per-channel caps. UI: Operate → budget • caps block.
+- **changeAuditor**: Logs changes with timestamps and reasons. UI: Operate → audit • changes block and Audit snapshot.
+
+### Audit & Learn
+- **attributionReconciler**: Produces credit intervals by channel with reallocation suggestions. UI: Audit snapshot and Operate context.
+- **ltvForecaster**: Shows cohort LTV estimates for decisioning. UI: Audit snapshot.
+- **reporter**: Summarizes iROAS and actions taken; lists artifact keys. UI: Audit snapshot.
+- **execNarrative**: One-paragraph narrative for leadership. UI: Audit snapshot.
+- **knowledgeDistiller**: Converts learnings into a playbook. UI: Audit snapshot.
+
+All agents emit SSE events and write artifacts for the UI to reflect progress and state.
+
+---
+
 ## Screens and workflow
 
 The application is organized into **5 screens** that represent **3 major steps** with **2 sub-steps** per step. The first three are the main tabs. Two additional screens open from buttons in the header.
