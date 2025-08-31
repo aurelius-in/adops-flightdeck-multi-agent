@@ -8,8 +8,17 @@ export default function Operate({ runId }: { runId: string }) {
   useEffect(() => {
     if (!runId && !isOfflineMode()) return;
     if (isOfflineMode()) {
-      loadOfflineEvents().then((e) => setEvents(e));
-      return;
+      let cancelled = false;
+      (async () => {
+        const e = await loadOfflineEvents();
+        setEvents([]);
+        for (let i = 0; i < e.length; i++) {
+          if (cancelled) break;
+          setEvents((prev) => [...prev, e[i]]);
+          await new Promise((r) => setTimeout(r, 700));
+        }
+      })();
+      return () => { cancelled = true; };
     }
     const es = new EventSource(`http://localhost:8787/api/stream/${runId}`);
     es.onmessage = (ev) => setEvents((prev) => [...prev, JSON.parse(ev.data)]);
