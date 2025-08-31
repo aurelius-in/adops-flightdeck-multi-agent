@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
+import { listProducts, seedSampleProductsIfEmpty, createProductTemplate } from "../lib/products";
 import { allowedPlanAgents } from "../lib/roles";
 
 export default function Plan({ onRun, runId, onQueue, role, project, onSaveProject }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; role?: string; project?: { product?:string; audience?:string; dailyBudget?:number; brandRules?:string }; onSaveProject?:(updates:{ product?:string; audience?:string; dailyBudget?:number; brandRules?:string })=>void }) {
@@ -9,6 +10,8 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
   const [rules, setRules] = useState(project?.brandRules || "");
   const [snapshot, setSnapshot] = useState<any>(null);
   const [persona, setPersona] = useState<"Ad Rep"|"Executive">("Ad Rep");
+  const [productMode, setProductMode] = useState<"select"|"create">("select");
+  const [productOptions, setProductOptions] = useState<{id:string; name:string}[]>([]);
 
   async function start() {
     if (isOfflineMode()) { onRun("offline-run"); return; }
@@ -23,6 +26,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
 
   useEffect(() => {
     let active = true;
+    try { seedSampleProductsIfEmpty(); setProductOptions(listProducts().map(p=>({ id:p.id, name:p.name }))); } catch {}
     async function load() {
       if (!runId && !isOfflineMode()) { setSnapshot(null); return; }
       if (isOfflineMode()) { const s = await loadOfflineRun(); if (active) setSnapshot(s); return; }
@@ -40,7 +44,23 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-neutral-400">Product</label>
-            <input className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={product} onChange={e=>setProduct(e.target.value)} />
+            {productMode==="select" ? (
+              <div className="flex items-center gap-2">
+                <select className="flex-1 bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" onChange={(e)=>{ const p = listProducts().find(x=>x.id===e.target.value); if (p){ setProduct(p.name||""); setAudience(p.audience||""); setBudget(p.dailyBudget||0); setRules(p.brandRules||""); } }}>
+                  <option value="">Select a product…</option>
+                  {productOptions.map(opt=> <option key={opt.id} value={opt.id}>{opt.name}</option>)}
+                </select>
+                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>setProductMode("create")}>Create product…</button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <input placeholder="Product name" className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={product} onChange={e=>setProduct(e.target.value)} />
+                <div className="flex items-center gap-2 text-xs">
+                  <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); setProductMode("select"); }}>Save product</button>
+                  <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>setProductMode("select")}>Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <label className="text-xs text-neutral-400">Daily budget</label>
