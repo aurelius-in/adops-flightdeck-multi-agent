@@ -1,4 +1,4 @@
-export default function Library({ onClose, runId }:{ onClose:()=>void; runId:string}) {
+export default function Library({ onClose, runId, onQueue }:{ onClose:()=>void; runId:string; onQueue?:(item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void}) {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
       <div className="card max-w-5xl w-full p-4" title="Assets and offers you can push into Plan">
@@ -20,7 +20,7 @@ export default function Library({ onClose, runId }:{ onClose:()=>void; runId:str
               {['img01','img02','img03','img04','img05','img06'].map(id=> (
                 <div key={id} className="border border-neutral-800 rounded p-2 bg-neutral-950 flex items-center justify-between">
                   <span>{id}</span>
-                  <button className="px-2 py-1 rounded bg-white text-black">Push to Plan</button>
+                  <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: 'assets', title: `Attach ${id} to creative` })}>Attach</button>
                 </div>
               ))}
             </div>
@@ -38,7 +38,7 @@ export default function Library({ onClose, runId }:{ onClose:()=>void; runId:str
                     <div>{o.label}</div>
                     <div className="text-[11px] text-neutral-500">iROAS {o.iroas} • margin floor {Math.round(o.margin*100)}%</div>
                   </div>
-                  <button className="px-2 py-1 rounded bg-white text-black">Push to Plan</button>
+                  <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: 'offers', title: `Enable ${o.label} for this run` })}>Enable</button>
                 </div>
               ))}
             </div>
@@ -47,6 +47,10 @@ export default function Library({ onClose, runId }:{ onClose:()=>void; runId:str
       </div>
     </div>
   );
+}
+
+function cryptoRandomId(): string {
+  try { return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,"0")).join(""); } catch { return Math.random().toString(36).slice(2); }
 }
 
 
