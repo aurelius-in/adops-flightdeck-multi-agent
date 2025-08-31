@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import { runGraph } from "./graph";
 import { AgentContext } from "./types";
 import { config } from "./config";
-import { createRun, getRun } from "./store";
+import { createRun, getRun, putArtifact, getArtifactSignedUrl } from "./store";
 
 const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 1_000_000 });
 await app.register(cors, { origin: config.CORS_ORIGIN, credentials: true });
@@ -60,7 +60,19 @@ app.get("/api/stream/:runId", async (req: any, reply) => {
 
 app.get("/api/runs/:runId", async (req: any) => {
   const run = await getRun(req.params.runId);
-  return run || {};
+  if (!run) return {};
+  // attach signed URLs if S3 enabled
+  const withUrls: any = { ...run };
+  if (withUrls.artifacts) {
+    const keys = Object.keys(withUrls.artifacts);
+    const urlIndex: Record<string,string> = {};
+    await Promise.all(keys.map(async (k) => {
+      const u = await getArtifactSignedUrl(run.runId, k);
+      if (u) urlIndex[k] = u;
+    }));
+    withUrls.signed = urlIndex;
+  }
+  return withUrls;
 });
 
 app.get("/api/healthz", async () => ({ ok: true }));
