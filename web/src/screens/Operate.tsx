@@ -4,7 +4,7 @@ import { summarize, timeAgo } from "../lib/format";
 import { Sparkline, Bar, Donut, StackedBars } from "../lib/charts";
 type Event = { ts:number; agent:string; type:string; data:any };
 
-export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
+export default function Operate({ role, runId, onQueue, onEvent }:{ role?: string; runId: string; onQueue: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void; onEvent: (msg:string)=>void; }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [speed, setSpeed] = useState<number>(1);
   const offline = isOfflineMode();
@@ -90,12 +90,14 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
             </div>
           </div>
         </Card>
+        {(!role || role==="Ad Rep") ? null : (
         <Card title="⏱ Supply-path optimizer">
           <StackedBars groups={[{label:"Exchange paths", parts:[{label:"A>DSP1", value: 62},{label:"B>DSP2", value: 38}]}]} />
           <div className="flex items-center gap-2 mt-2">
             <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "spo", title: "Prune B>DSP2", impact: "-1.2% IVT" })}>Prune path</button>
           </div>
         </Card>
+        )}
         <Card title="⏱ Roadmap">
           <div className="grid grid-cols-4 gap-2 text-xs">
             {(["Backlog","Next","Running","Done"]).map(col=> (
@@ -130,6 +132,7 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
             ))}
           </div>
         </Card>
+        {(!role || role==="Ad Rep") ? null : (
         <Card title="⚠ Fraud sentinel">
           <div className="flex items-center gap-3">
             <Donut value={1.2} total={100} />
@@ -137,6 +140,7 @@ export default function Operate({ runId, onQueue, onEvent }:{ runId: string; onQ
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
         </Card>
+        )}
         <Card title="⏱ Budget officer">
           <div className="grid grid-cols-3 gap-2 text-xs">
             {["Meta","Search","TikTok"].map(ch=> (

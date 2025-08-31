@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { summarize } from "../lib/format";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
 
-export default function Audit({ runId, onQueue }: { runId: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
+export default function Audit({ role, runId, onQueue }: { role?: string; runId: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
   const [data, setData] = useState<any>({});
   useEffect(() => {
     if (isOfflineMode()) { loadOfflineRun().then(setData); return; }
@@ -14,7 +14,7 @@ export default function Audit({ runId, onQueue }: { runId: string; onQueue?: (it
     <div className="card p-4" title="Final artifacts, attribution, LTV and executive summary">
       <div className="font-medium mb-2 text-brand-blue">Audit & Learn</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <AttributionPanel attrib={data?.artifacts?.attribution} onQueue={onQueue} />
+        <AttributionPanel attrib={data?.artifacts?.attribution} onQueue={onQueue} compact={role==="Ad Rep"} />
         <LTVPanel ltv={data?.artifacts?.ltv} />
         <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />
         <SummaryCard title="Executive narrative" value={String(data?.artifacts?.execNarrative ?? "")} />
@@ -37,7 +37,7 @@ function SummaryCard({ title, value }:{ title:string; value:string }) {
   );
 }
 
-function AttributionPanel({ attrib, onQueue }:{ attrib:any; onQueue?: (item:any)=>void }) {
+function AttributionPanel({ attrib, onQueue, compact }:{ attrib:any; onQueue?: (item:any)=>void; compact?: boolean }) {
   const credit = attrib?.credit ?? [];
   const channels = credit.map((c:any)=>c.channel);
   const [from, setFrom] = useState<string>(channels?.[0] || "");
@@ -53,7 +53,7 @@ function AttributionPanel({ attrib, onQueue }:{ attrib:any; onQueue?: (item:any)
           <AttributionBar key={c.channel} label={c.channel} low={c.low ?? Math.max(0,c.point-0.07)} point={c.point ?? 0} high={c.high ?? Math.min(1,c.point+0.07)} />
         ))}
       </div>
-      {channels.length>=2 && (
+      {channels.length>=2 && !compact && (
         <div className="mt-3 border-t border-neutral-800 pt-2">
           <div className="text-xs text-neutral-400 mb-1">What‑if reallocation</div>
           <div className="flex items-center gap-2 text-xs mb-1">

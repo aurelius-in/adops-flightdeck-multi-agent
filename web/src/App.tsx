@@ -39,9 +39,9 @@ export default function App() {
             <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
           ))}
         </nav>
-        {tab==="Plan" && <Plan onRun={(id)=>{ setRunId(id); setLastEvent("Run started"); }} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • queued action`); }} />} 
-        {tab==="Operate" && <Operate runId={runId} onQueue={(item)=>setQueue(q=>[...q, item])} onEvent={(msg)=>setLastEvent(msg)} />} 
-        {tab==="Audit" && <Audit runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
+        {tab==="Plan" && <Plan role={role} onRun={(id)=>{ setRunId(id); setLastEvent("Run started"); }} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • queued action`); }} />} 
+        {tab==="Operate" && <Operate role={role} runId={runId} onQueue={(item)=>setQueue(q=>[...q, item])} onEvent={(msg)=>setLastEvent(msg)} />} 
+        {tab==="Audit" && <Audit role={role} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
 
         {showLib && <Library onClose={()=>setShowLib(false)} runId={runId} onQueue={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • added`); }} />} 
         {showInvestigate && <Investigate onClose={()=>setShowInvestigate(false)} runId={runId} onPropose={(item)=>{ setQueue(q=>[...q, item]); setLastEvent(`${item.agent} • proposed action`); }} />} 
