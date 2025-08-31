@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { isOfflineMode, loadOfflineRun } from "../lib/offline";
 
-export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runId?: string }) {
+export default function Plan({ onRun, runId, onQueue }: { onRun: (id: string)=>void; runId?: string; onQueue?: (item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
   const [product, setProduct] = useState("SmartWater Bottle");
   const [audience, setAudience] = useState("Fitness enthusiasts 25–45");
   const [budget, setBudget] = useState(200);
@@ -77,8 +77,8 @@ export default function Plan({ onRun, runId }: { onRun: (id: string)=>void; runI
           )}
         </div>
       </div>
-      <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} runId={runId} snapshot={snapshot} />
-      <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} runId={runId} snapshot={snapshot} />
+      <AgentGrid title="Target & offer" agents={["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"]} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      <AgentGrid title="Creative & guardrails" agents={["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"]} runId={runId} snapshot={snapshot} onQueue={onQueue} />
     </div>
   );
 }
@@ -105,7 +105,7 @@ const AGENT_DISPLAY: Record<string, "tile"|"card"> = {
   "Prompt palette": "tile",
 };
 
-function AgentGrid({ title, agents, runId, snapshot}:{title:string; agents:string[]; runId?: string; snapshot?: any}) {
+function AgentGrid({ title, agents, runId, snapshot, onQueue}:{title:string; agents:string[]; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   return (
     <div className="lg:col-span-3 card p-4">
       <div className="font-medium mb-3 text-brand-blue">{title}</div>
@@ -113,15 +113,15 @@ function AgentGrid({ title, agents, runId, snapshot}:{title:string; agents:strin
         {agents.map(a=>{
           const mode = AGENT_DISPLAY[a] ?? "tile";
           return mode === "card"
-            ? <AgentCardDetailed key={a} agent={a} runId={runId} snapshot={snapshot} />
-            : <AgentTile key={a} agent={a} runId={runId} snapshot={snapshot} />;
+            ? <AgentCardDetailed key={a} agent={a} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+            : <AgentTile key={a} agent={a} runId={runId} snapshot={snapshot} onQueue={onQueue} />;
         })}
       </div>
     </div>
   );
 }
 
-function AgentTile({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
+function AgentTile({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const s = snapshot?.artifacts || {};
   const summary = summarizePlan(agent, s);
   return (
@@ -131,6 +131,9 @@ function AgentTile({ agent, runId, snapshot }:{agent:string; runId?: string; sna
         {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
       </div>
       <div className="text-xs text-neutral-300 mt-1">{runId && summary ? summary : (runId?"Populated.":"Populates after run begins.")}</div>
+      <div className="mt-2">
+        <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: agentToKey(agent), title: tileActionLabel(agent) })}>{tileActionLabel(agent)}</button>
+      </div>
     </div>
   );
 }
@@ -231,7 +234,30 @@ function formatBudgetKPI(snapshot?: any, budget?: number): string {
   return `Daily budget ${total} • iROAS ${iroas ?? "—"}`;
 }
 
-function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: string; snapshot?: any}) {
+function tileActionLabel(agent:string): string {
+  switch (agent) {
+    case "Warm start": return "Apply priors";
+    case "Gene splicer": return "Promote to current";
+    case "Tone balancer": return "Apply tone pass";
+    case "Compliance review": return "Apply rewrite";
+    case "Localization": return "Add locale";
+    case "Accessibility": return "Save alts";
+    case "Style prompts": return "Send to image tool";
+    case "Voiceover scripts": return "Export SRT";
+    case "Prompt palette": return "Apply palette";
+    default: return "Apply";
+  }
+}
+
+function agentToKey(label:string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0,12) || "agent";
+}
+
+function cryptoRandomId(): string {
+  try { return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,"0")).join(""); } catch { return Math.random().toString(36).slice(2); }
+}
+
+function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const a = snapshot?.artifacts || {};
   const header = (
     <div className="text-sm font-medium flex items-center justify-between mb-2">
@@ -250,11 +276,15 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
           {cohorts.length ? (
             <div className="space-y-1 text-xs">
               {cohorts.map((c:any)=> (
-                <div key={c.name} className="flex items-center justify-between">
-                  <div className="truncate">{c.name} <span className="text-neutral-500">• {c.angle}</span></div>
-                  <div className="text-neutral-400">{c.size?.toLocaleString?.()} ppl</div>
-                </div>
+                <label key={c.name} className="flex items-center justify-between gap-2">
+                  <span className="truncate"><input type="checkbox" className="mr-2" defaultChecked />{c.name} <span className="text-neutral-500">• {c.angle}</span></span>
+                  <span className="text-neutral-400">{c.size?.toLocaleString?.()} ppl</span>
+                </label>
               ))}
+              <div className="flex items-center gap-2 mt-2">
+                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
+                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Export CSV</button>
+              </div>
             </div>
           ) : empty}
         </div>
@@ -266,11 +296,21 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
         <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
           {header}
           {offers.length ? (
-            <div className="space-y-1 text-xs">
+            <div className="space-y-2 text-xs">
               {offers.map((o:any)=> (
-                <div key={o.label} className="flex items-center justify-between">
-                  <div>{o.label}</div>
-                  <div className="text-neutral-400">iROAS {o.predicted_iROAS}</div>
+                <div key={o.label} className="border border-neutral-800 rounded p-2 bg-neutral-950">
+                  <div className="flex items-center justify-between">
+                    <div>{o.label}</div>
+                    <div className="text-neutral-400">iROAS {o.predicted_iROAS}</div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[11px] text-neutral-400">Margin floor</span>
+                    <input type="range" min={0.2} max={0.6} step={0.05} defaultValue={o.marginFloor || 0.3} />
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Add ${o.label} to Offer Catalog` })}>Add to Offer Catalog</button>
+                    <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Send ${o.label} to Experiment`, impact: "+2% iROAS" })}>Send to Experiment</button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -284,10 +324,16 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
         <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
           {header}
           {assets.length ? (
-            <div className="flex flex-wrap gap-1 text-[11px]">
-              {assets.map((as:any)=> (
-                <span key={as.id} className="px-2 py-0.5 border border-neutral-800 rounded bg-neutral-900">{as.tags?.[0] ?? as.id}</span>
-              ))}
+            <div>
+              <div className="flex flex-wrap gap-1 text-[11px]">
+                {assets.map((as:any)=> (
+                  <span key={as.id} className="px-2 py-0.5 border border-neutral-800 rounded bg-neutral-900">{as.tags?.[0] ?? as.id}</span>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 mt-2">
+                <button className="px-2 py-1 rounded bg-white text-black text-xs">Attach to creative</button>
+                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Open in editor</button>
+              </div>
             </div>
           ) : empty}
         </div>
@@ -305,6 +351,14 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
               <div className="flex flex-wrap gap-1">
                 {(b.ctAs||[]).map((c:string)=> <span key={c} className="px-2 py-0.5 border border-neutral-800 rounded bg-neutral-900">{c}</span>)}
               </div>
+              <div className="flex items-center gap-2 mt-2">
+                <select className="bg-neutral-950 border border-neutral-800 rounded p-1">
+                  <option>v1</option>
+                  <option>v2</option>
+                </select>
+                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Diff vs previous</button>
+                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
+              </div>
             </div>
           ) : empty}
         </div>
@@ -320,6 +374,10 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
               {list.map((v:any,idx:number)=> (
                 <div key={idx} className="truncate">{v.headline} <span className="text-neutral-500">• {v.cta}</span></div>
               ))}
+              <div className="flex items-center gap-2 mt-2">
+                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
+                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Regenerate</button>
+              </div>
             </div>
           ) : empty}
         </div>
@@ -335,6 +393,10 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
               {beats.map((b:string, i:number)=> <li key={i} className="truncate">{b}</li>)}
             </ol>
           ) : empty}
+          <div className="flex items-center gap-2 mt-2">
+            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Reorder</button>
+            <button className="px-2 py-1 rounded bg-white text-black text-xs">Export outline</button>
+          </div>
         </div>
       );
     }
@@ -349,6 +411,10 @@ function AgentCardDetailed({ agent, runId, snapshot }:{agent:string; runId?: str
               <div className="text-neutral-400">Attention: {(best.stopProb*100|0)}%</div>
             </div>
           ) : empty}
+          <div className="flex items-center gap-2 mt-2">
+            <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
+            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Add opening caption</button>
+          </div>
         </div>
       );
     }
