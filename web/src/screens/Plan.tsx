@@ -125,7 +125,7 @@ function AgentTile({ agent, runId, snapshot, onQueue }:{agent:string; runId?: st
   const s = snapshot?.artifacts || {};
   const summary = summarizePlan(agent, s);
   return (
-    <div title="Agent module" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+    <div title="Agent module" className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
       <div className="text-sm font-medium flex items-center justify-between">
         <span>{agent}</span>
         {runId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700">live</span>}
@@ -293,7 +293,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Audience DNA": {
       const cohorts = Array.isArray(a.audienceDNA) ? a.audienceDNA.slice(0,3) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
           {header}
           {cohorts.length ? (
             <div className="space-y-1 text-xs">
@@ -315,7 +315,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Offer composer": {
       const offers = Array.isArray(a.offers) ? a.offers.slice(0,3) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {offers.length ? (
             <div className="space-y-2 text-xs">
@@ -343,7 +343,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Asset librarian": {
       const assets = Array.isArray(a.assets) ? a.assets.slice(0,6) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {assets.length ? (
             <div>
@@ -364,7 +364,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Creative brief": {
       const b = a.creativeBrief;
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
           {header}
           {b ? (
             <div className="text-xs space-y-1">
@@ -389,7 +389,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Creative variants": {
       const list = Array.isArray(a.creatives) ? a.creatives.slice(0,2) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {list.length ? (
             <div className="text-xs space-y-1">
@@ -408,7 +408,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "UGC outline": {
       const beats = Array.isArray(a.ugc) ? a.ugc.slice(0,5) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {beats.length ? (
             <ol className="list-decimal list-inside text-xs space-y-0.5">

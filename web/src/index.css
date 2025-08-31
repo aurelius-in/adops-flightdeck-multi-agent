@@ -19,6 +19,7 @@
 .fade-in {
   animation: fadeIn 180ms ease-out;
 }
+.hover-card:hover { box-shadow: 0 8px 24px rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.4); }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(2px); }
