@@ -64,13 +64,15 @@ export function allowedTabs(role?: string): ("Plan"|"Operate"|"Audit")[] {
   // Framework for role-based tab visibility. Adjust per org policy.
   switch (role as UserRole) {
     case "Ad Rep":
-    case "Media Buyer":
-    case "Executive":
-      return ["Plan","Operate","Audit"];
+      return ["Plan","Operate","Audit"]; // full hands-on flow
     case "Creative":
-      return ["Plan","Operate","Audit"]; // creatives often need LTV/report read-only
+      return ["Plan","Operate"]; // build and monitor creative, no audit panel by default
     case "Compliance":
-      return ["Plan","Operate","Audit"]; // compliance needs Audit/export
+      return ["Plan","Audit"]; // plan guardrails + audit/export, no operate cockpit
+    case "Media Buyer":
+      return ["Operate","Plan","Audit"]; // ops-first workflow
+    case "Executive":
+      return ["Operate","Audit","Plan"]; // high-level first, plan optional
     default:
       return ["Plan","Operate","Audit"];
   }
