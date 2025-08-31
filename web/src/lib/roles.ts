@@ -60,4 +60,20 @@ export function auditPreferences(role?: string) {
   return roleConfig[role as UserRole];
 }
 
+export function allowedTabs(role?: string): ("Plan"|"Operate"|"Audit")[] {
+  // Framework for role-based tab visibility. Adjust per org policy.
+  switch (role as UserRole) {
+    case "Ad Rep":
+    case "Media Buyer":
+    case "Executive":
+      return ["Plan","Operate","Audit"];
+    case "Creative":
+      return ["Plan","Operate","Audit"]; // creatives often need LTV/report read-only
+    case "Compliance":
+      return ["Plan","Operate","Audit"]; // compliance needs Audit/export
+    default:
+      return ["Plan","Operate","Audit"];
+  }
+}
+
 

@@ -11,6 +11,7 @@ import TodayDrawer from "./components/TodayDrawer";
 import RoleToolbar from "./components/RoleToolbar";
 import ContextDrawer from "./components/ContextDrawer";
 import { Project, seedSampleProjectsIfEmpty, listProjects, getLastProjectId, upsertProject, addRun } from "./lib/projects";
+import { allowedTabs } from "./lib/roles";
 
 type Tab = "Plan"|"Operate"|"Audit";
 
@@ -57,7 +58,7 @@ export default function App() {
         </div>
         <RoleToolbar role={role} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • queued action`); }} />
         <nav className="flex gap-2">
-          {(["Plan","Operate","Audit"] as Tab[]).map(t=> (
+          {(allowedTabs(role) as Tab[]).map(t=> (
             <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
           ))}
         </nav>
