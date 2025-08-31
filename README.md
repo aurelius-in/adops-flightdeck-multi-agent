@@ -110,6 +110,81 @@ The application is organized into **5 screens** that represent **3 major steps**
 
 ---
 
+## Role-based UX and project workflow
+
+Flightdeck is role-gated. Selecting a role in the header immediately hides irrelevant surfaces and reorders KPIs for that role. A Project Switcher in the header (with search, New, Duplicate, Archive) keeps runs and defaults organized. The last opened project auto-loads on startup. Plan is pre-filled from the active project and supports Save changes vs Run without saving.
+
+### Project model
+
+- Project: `{ id, name, product, audience, dailyBudget, brandRules, channels[], locales[], createdAt, updatedAt, archivedAt? }`
+- Run: `{ id, projectId, startedAt, status, summaryKPIs, artifacts }`
+- Library (per project): `assets[], offers[]`
+
+Header additions:
+- Project Switcher (combobox with pinned/recent/search; New/Duplicate/Archive)
+- Context button (edits Product/Audience/Budget/Rules)
+- Event ticker and Action Queue (global approvals)
+
+Operate additions:
+- Run History strip (per project): last 5 runs with iROAS/CPA tiles; click to open in Audit
+
+### Role snapshots
+
+- Ad Rep (focused execution)
+  - Plan: Audience DNA, Warm‑Start, Offer Composer, Asset Librarian, Creative Brief/Variants, Tone, Compliance, Thumb‑Stop, Localization, Accessibility, UGC
+  - Operate: Experiment (propose), Budget Pacer (propose), Anomaly, Root‑Cause, Negatives, Fraud, Budget Caps, Change Log, compact Roadmap
+  - Audit: compact Attribution and LTV, Report
+- Executive (direction and approvals; superset where safe)
+  - Adds Attribution what‑if, broader Operate (Roadmap control, optional SPO), Executive Narrative, full approvals
+
+---
+
+## Click-through guides (by role)
+
+These are achievable without dev views; all actions are visual with small activity logs. Raw JSON is hidden unless View JSON is toggled.
+
+### Ad Rep
+1) Header → Project → select (or New → name/product/audience/budget/rules → Create & Open)
+2) Header → Context → confirm defaults (Save changes if you want them to persist)
+3) Plan → Audience DNA → select 1–2 cohorts → Select
+4) Plan → Warm‑Start → Use priors
+5) Plan → Offer Composer → pick 1–2 offers → Send to Experiment
+6) Plan → Asset Librarian → attach 1–2 assets
+7) Plan → Creative Brief → confirm → Lock brief
+8) Plan → Creative Variants → Approve for test (2 variants)
+9) Plan → Tone → Apply tone pass
+10) Plan → Compliance → Apply fixes
+11) Plan → Thumb‑Stop → Set opening frame + caption
+12) Plan → Run (creates Run #N under the project)
+13) Operate → Experiment → Propose experiment (Action Queue)
+14) Operate → Budget Pacer → sliders → Propose reallocation
+15) Operate → Anomaly → Pause/Boost → Propose
+16) Operate → Root‑Cause → Propose fixes
+17) Operate → Negatives → Propose exclusions
+18) Operate → Fraud → Propose exclusion
+19) Operate → Budget Caps → Save
+20) Operate → Change Log → skim
+21) Action Queue → add one‑liner rationale → Notify Exec
+22) Audit → compact Attribution + LTV
+23) Audit → Report → Download pack / Share link
+
+### Executive
+1) Header → Project → open project (or New for initiative); run history is visible in Operate
+2) Action Queue → open Experiment package → Approve; review Reallocations/Negatives/Fraud → Approve/Decline (note)
+3) Operate → Budget Pacer → Apply reallocation; Budget Caps → Save; (optional) SPO → Prune path
+4) Audit → Attribution what‑if → adjust slider → Propose shift
+5) Audit → LTV → mark evergreen combos
+6) Audit → Report → add Executive narrative → Download pack
+7) Operate → Roadmap → promote Next → Running / mark Done
+
+Acceptance
+- Each visible panel contains: primary action, visualization, last 3 events
+- Role gating hides irrelevant surfaces on selection
+- Action Queue is the single path for irreversible changes
+- Run History works per project; clicking a run opens Audit (read‑only)
+
+---
+
 ## Notable agents
 
 - **Audience DNA Mapper** builds cohorts using embeddings and RFM signals and outputs persona cards with angles.
