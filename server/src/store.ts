@@ -6,12 +6,16 @@ import { config as app } from "./config";
 
 type RunRecord = { runId: string; artifacts: Record<string, any>; createdAt: number };
 type ActionRecord = { runId: string; actionId: string; approved: boolean; approvedBy?: string; at: number; payload: any };
+type IdemRecord = { key: string; runId: string; at: number };
 
-const ddb = app.DYNAMO_RUNS_TABLE ? new DynamoDBDocumentClient(new DynamoDBClient({})) : null;
+const ddb = (app.DYNAMO_RUNS_TABLE || app.DYNAMO_ACTIONS_TABLE || app.DYNAMO_IDEMPOTENCY_TABLE)
+  ? new DynamoDBDocumentClient(new DynamoDBClient({}))
+  : null;
 const s3 = app.S3_BUCKET ? new S3Client({}) : null;
 
 const memRuns = new Map<string, RunRecord>();
 const memActions: ActionRecord[] = [];
+const memIdem = new Map<string, string>();
 
 export async function getRun(runId: string): Promise<RunRecord | undefined> {
   if (ddb && app.DYNAMO_RUNS_TABLE) {
@@ -58,6 +62,23 @@ export async function recordAction(a: ActionRecord): Promise<void> {
     await ddb.send(new PutCommand({ TableName: app.DYNAMO_ACTIONS_TABLE, Item: a }));
   } else {
     memActions.push(a);
+  }
+}
+
+export async function getIdempotentRunId(key: string): Promise<string | undefined> {
+  if (ddb && app.DYNAMO_IDEMPOTENCY_TABLE) {
+    const res = await ddb.send(new GetCommand({ TableName: app.DYNAMO_IDEMPOTENCY_TABLE, Key: { key } }));
+    return (res.Item as IdemRecord | undefined)?.runId;
+  }
+  return memIdem.get(key);
+}
+
+export async function setIdempotentRunId(key: string, runId: string): Promise<void> {
+  const rec: IdemRecord = { key, runId, at: Date.now() };
+  if (ddb && app.DYNAMO_IDEMPOTENCY_TABLE) {
+    await ddb.send(new PutCommand({ TableName: app.DYNAMO_IDEMPOTENCY_TABLE, Item: rec, ConditionExpression: "attribute_not_exists(#k)", ExpressionAttributeNames: { "#k": "key" } }));
+  } else {
+    memIdem.set(key, runId);
   }
 }
 

@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import { runGraph } from "./graph";
 import { AgentContext } from "./types";
 import { config } from "./config";
-import { createRun, getRun, putArtifact, getArtifactSignedUrl } from "./store";
+import { createRun, getRun, putArtifact, getArtifactSignedUrl, getIdempotentRunId, setIdempotentRunId, recordAction } from "./store";
 
 const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 1_000_000 });
 await app.register(cors, { origin: config.CORS_ORIGIN, credentials: true });
@@ -24,6 +24,11 @@ app.post("/api/run", async (req: any, reply) => {
     reply.code(400);
     return { error: "product, audience, budget required" };
   }
+  const idemKey = req.headers["idempotency-key"] as string | undefined;
+  if (idemKey) {
+    const existing = await getIdempotentRunId(idemKey);
+    if (existing) return { runId: existing };
+  }
   const runId = nanoid();
   const artifacts: any = {};
   await createRun(runId);
@@ -37,6 +42,7 @@ app.post("/api/run", async (req: any, reply) => {
     catch (err) { emit({ ts: Date.now(), agent: "system", type: "error", data: String(err) }); }
     finally { emit({ ts: Date.now(), agent: "system", type: "done", data: {} }); }
   })();
+  if (idemKey) { try { await setIdempotentRunId(idemKey, runId); } catch {} }
   return { runId };
 });
 
@@ -77,6 +83,15 @@ app.get("/api/runs/:runId", async (req: any) => {
 
 app.get("/api/healthz", async () => ({ ok: true }));
 app.get("/api/readyz", async () => ({ ok: true }));
+
+// Approvals API: gate platform writes
+app.post("/api/actions/:runId", async (req: any, reply) => {
+  const { runId } = req.params;
+  const { actionId, approved, payload } = req.body || {};
+  if (!actionId || typeof approved !== "boolean") { reply.code(400); return { error: "actionId and approved required" }; }
+  await recordAction({ runId, actionId, approved, at: Date.now(), payload, approvedBy: "user" });
+  return { ok: true };
+});
 
 app.addHook("onClose", async () => {
   listeners.forEach((set) => set.forEach((res) => { try { res.end(); } catch {} }));
