@@ -15,6 +15,25 @@
   @apply px-3 py-2 rounded-lg border border-neutral-800 bg-neutral-900 hover:border-brand-blue transition;
 }
 
+/* Subtle animated gradient button (light purple → light blue grey, sweeps and returns) */
+.btn-soft {
+  --btn-c1: #B9A8F9; /* light purple */
+  --btn-c2: #B9C4D6; /* light blue grey */
+  background: linear-gradient(135deg, var(--btn-c1) 0%, var(--btn-c2) 100%);
+  background-size: 200% 200%;
+  animation: btnSweep 6s ease-in-out infinite;
+  @apply border border-neutral-800 text-black font-semibold rounded-lg transition;
+}
+.btn-soft:hover { @apply border-brand-blue; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-soft { animation: none; }
+}
+@keyframes btnSweep {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
 /* Micro-animations */
 .fade-in {
   animation: fadeIn 180ms ease-out;

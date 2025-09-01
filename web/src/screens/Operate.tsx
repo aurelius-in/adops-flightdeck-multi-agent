@@ -82,7 +82,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
         <Card title="⏱ Experiment planner">
           <div className="text-sm mb-2">{summarize("experiment","design", get("experiment","design"))}</div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-2 rounded bg-white text-black text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "experiment", title: "Propose experiment", impact: "+1.5% iROAS (est.)" })}>Propose experiment</button>
+            <button className="btn-soft text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "experiment", title: "Propose experiment", impact: "+1.5% iROAS (est.)" })}>Propose experiment</button>
           </div>
           <TinyLog items={recent("experiment")} />
           <JsonToggle data={get("experiment")} />
@@ -112,7 +112,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
                 </div>
               ))}
               <div className="flex items-center gap-2">
-                <button className="px-3 py-2 rounded bg-white text-black text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
                 <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Re-route</button>
               </div>
             </div>
@@ -125,7 +125,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
         <Card title="⏱ Supply-path optimizer">
           <StackedBars groups={[{label:"Exchange paths", parts:[{label:"A>DSP1", value: 62},{label:"B>DSP2", value: 38}]}]} />
           <div className="flex items-center gap-2 mt-2">
-            <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "spo", title: "Prune B>DSP2", impact: "-1.2% IVT" })}>Prune path</button>
+            <button className="btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "spo", title: "Prune B>DSP2", impact: "-1.2% IVT" })}>Prune path</button>
           </div>
           <JsonToggle data={get("spo")}/>
         </Card>
@@ -150,7 +150,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
             <Sparkline points={ctrSpark} />
             <div className="flex items-center gap-2">
               <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onQueue({ id: cryptoRandomId(), agent:"anomaly", title:"Pause variant 2", reason:"CTR < 1.5%" })}>Pause</button>
-              <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent:"anomaly", title:"Boost variant 1", reason:"High CTR" })}>Boost</button>
+              <button className="btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent:"anomaly", title:"Boost variant 1", reason:"High CTR" })}>Boost</button>
             </div>
           </div>
           <TinyLog items={recent("anomaly")}/>
@@ -160,7 +160,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
         {allowedOperateBlocks(role).some(([a])=>a==="rootcause") && (
         <Card title="⚠ Root-cause sleuth">
           <Bar data={[{label:"Creative fatigue", value:34},{label:"Audience shift", value:22},{label:"Bid pressure", value:18}]} />
-          <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Propose fixes", impact: "+5% CTR" })}>Propose fixes</button>
+          <button className="mt-2 btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Propose fixes", impact: "+5% CTR" })}>Propose fixes</button>
           <TinyLog items={recent("rootcause")} />
           <JsonToggle data={get("rootcause")} />
         </Card>
@@ -171,7 +171,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
             {["free download","kids","DIY hack"].map(term=> (
               <div key={term} className="flex items-center justify-between border border-neutral-800 rounded p-1">
                 <span>{term}</span>
-                <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "negatives", title: `Exclude term: ${term}`, impact: "Reduce wasted spend" })}>Approve</button>
+                <button className="btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "negatives", title: `Exclude term: ${term}`, impact: "Reduce wasted spend" })}>Approve</button>
               </div>
             ))}
           </div>
@@ -185,7 +185,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
             <Donut value={1.2} total={100} />
             <div className="text-xs text-neutral-400">IVT rate ~1.2%</div>
           </div>
-          <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
+          <button className="mt-2 btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
           <TinyLog items={recent("fraud")} />
           <JsonToggle data={get("fraud")} />
         </Card>
@@ -200,7 +200,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
               </div>
             ))}
           </div>
-          <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "budget", title: "Save caps", impact: "Hold daily max" })}>Save caps</button>
+          <button className="mt-2 btn-soft" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "budget", title: "Save caps", impact: "Hold daily max" })}>Save caps</button>
           <TinyLog items={recent("budget")} />
           <JsonToggle data={get("budget")} />
         </Card>
