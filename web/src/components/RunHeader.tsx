@@ -1,6 +1,9 @@
 import { formatCurrency } from "../lib/format";
 import ProjectSwitcher from "./ProjectSwitcher";
 import type { Project } from "../lib/projects";
+import { allowedTabs } from "../lib/roles";
+
+type Tab = "Plan"|"Operate"|"Audit"|"Buy"|"Studio"|"Govern"|"Dashboard";
 
 export type PerformanceSummary = {
   spend?: number;
@@ -22,7 +25,9 @@ export default function RunHeader({
   onRoleChange,
   onOpenToday,
   onOpenContext,
-  onProjectSelect
+  onProjectSelect,
+  tab,
+  onTabChange
 }:{
   product?: string;
   budget?: number;
@@ -37,14 +42,17 @@ export default function RunHeader({
   onOpenToday: ()=>void;
   onOpenContext: ()=>void;
   onProjectSelect?: (p: Project)=>void;
+  tab: Tab;
+  onTabChange: (t: Tab)=>void;
 }) {
+  const threeTabs = (allowedTabs(role) as Tab[]).filter(t=> ["Plan","Operate","Audit"].includes(t));
   return (
     <div className="sticky top-0 z-20 bg-neutral-950/80 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/60 flex items-center justify-between border-b border-neutral-800 pb-3">
       <div className="flex items-center gap-3">
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
         <div className="w-56" />
         <div className="text-xs">
-          <div className="text-neutral-400 mb-0.5">User Role</div>
+          <div className="text-neutral-400 mb-0.5">My Role</div>
           <select className="bg-neutral-950 border border-neutral-800 rounded p-1" value={role} onChange={e=>onRoleChange(e.target.value)}>
             <option>Ad Rep</option>
             <option>Executive</option>
@@ -53,6 +61,11 @@ export default function RunHeader({
             <option>Media Buyer</option>
           </select>
         </div>
+        <nav className="flex gap-2 ml-2">
+          {threeTabs.map(tn=> (
+            <button key={tn} title={tn==="Plan"?"Define product, audience, budget and generate creatives":tn==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} onClick={()=>onTabChange(tn)} className={`px-3 py-2 rounded-lg border text-xs ${tab===tn?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{tn}</button>
+          ))}
+        </nav>
       </div>
       <div className="flex items-center gap-3">
         <button className="px-2.5 py-1.5 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition text-xs" onClick={onOpenQueue}>📥 Action Queue</button>
