@@ -5,6 +5,7 @@
 @layer base {
   html, body, #root { height: 100%; }
   body { font-family: "Century Gothic", AppleGothic, "URW Gothic", Arial, Helvetica, sans-serif; }
+  :focus-visible { outline: 2px solid rgba(147,197,253,0.8); outline-offset: 2px; border-radius: 8px; }
 }
 
 .card {
@@ -15,11 +16,38 @@
   @apply px-3 py-2 rounded-lg border border-neutral-800 bg-neutral-900 hover:border-brand-blue transition;
 }
 
+/* Subtle animated gradient button (light purple → light blue grey, sweeps and returns) */
+.btn-soft {
+  --btn-c1: #B9A8F9; /* light purple */
+  --btn-c2: #B9C4D6; /* light blue grey */
+  background: linear-gradient(135deg, var(--btn-c1) 0%, var(--btn-c2) 100%);
+  background-size: 200% 200%;
+  animation: btnSweep 6s ease-in-out infinite;
+  @apply border border-neutral-800 text-black font-semibold rounded-lg transition;
+}
+.btn-soft:hover { @apply border-brand-blue; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-soft { animation: none; }
+}
+@keyframes btnSweep {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
 /* Micro-animations */
 .fade-in {
   animation: fadeIn 180ms ease-out;
 }
 .hover-card:hover { box-shadow: 0 8px 24px rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.4); }
+
+/* Disclosure helpers */
+.disclosure-btn { @apply text-[11px] text-neutral-400 hover:text-white flex items-center gap-1; }
+.caret { transition: transform 200ms ease; display: inline-block; }
+.caret-open { transform: rotate(90deg); }
+.disclosure-content { overflow: hidden; transition: max-height 220ms ease, opacity 220ms ease; }
+.disclosure-closed { max-height: 0; opacity: 0; }
+.disclosure-open { max-height: 320px; opacity: 1; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(2px); }

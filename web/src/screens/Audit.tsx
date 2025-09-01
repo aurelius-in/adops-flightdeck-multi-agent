@@ -22,7 +22,7 @@ export default function Audit({ role, runId, onQueue }: { role?: string; runId: 
         {prefs.showExec && <ExecNarrativePanel initial={String(data?.artifacts?.execNarrative ?? "")} onQueue={onQueue} />}
       </div>
       <div className="flex items-center gap-2">
-        <button className="px-3 py-2 rounded-lg bg-white text-black">Download report pack</button>
+        <button className="btn-soft">Download report pack</button>
         <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Share read-only link</button>
       </div>
       {/* Raw snapshot intentionally hidden for end users */}
@@ -46,7 +46,7 @@ function ExecNarrativePanel({ initial, onQueue }:{ initial:string; onQueue?: (it
       <div className="text-xs text-neutral-400 mb-1">Executive narrative</div>
       <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue text-sm" rows={4} value={text} onChange={e=>setText(e.target.value)} placeholder="Add a crisp executive summary..." />
       <div className="mt-2 flex items-center gap-2">
-        <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=> onQueue && onQueue({ id: cryptoRandomId(), agent: "exec", title: "Save executive narrative", reason: text.slice(0,120) })}>Save narrative</button>
+        <button className="btn-soft text-xs" onClick={()=> onQueue && onQueue({ id: cryptoRandomId(), agent: "exec", title: "Save executive narrative", reason: text.slice(0,120) })}>Save narrative</button>
       </div>
     </div>
   );
