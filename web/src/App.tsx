@@ -58,8 +58,12 @@ export default function App() {
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
         <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} onProjectSelect={(p)=>{ setProject(p); setContext({ product: p.product, audience: p.audience, budget: p.dailyBudget }); }} />
         <div className="flex items-center gap-2">
-          <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
-          <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
+          {(["Ad Rep","Creative","Media Buyer","Executive","Compliance"].includes(role)) && (
+            <button title="Browse asset library and offer ideas; push selections into Plan" className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue transition" onClick={()=>setShowLib(true)}>Assets & Offers</button>
+          )}
+          {(["Ad Rep","Media Buyer","Executive"].includes(role)) && (
+            <button title="Open root-cause explorer to understand performance dips and remedies" className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={()=>setShowInvestigate(true)}>Explain a Dip</button>
+          )}
         </div>
         <RoleToolbar role={role} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • queued action`); }} />
         <nav className="flex gap-2">
@@ -72,7 +76,7 @@ export default function App() {
         {tab==="Plan" && <Plan role={role} project={project || undefined} onSaveProject={(updates)=>{ if (!project) return; const next = upsertProject({ ...project, product: updates.product, audience: updates.audience, dailyBudget: updates.dailyBudget, brandRules: updates.brandRules, updatedAt: Date.now() }); setProject(next); setContext({ product: next.product, audience: next.audience, budget: next.dailyBudget }); setLastEvent("Project saved"); }} onRun={(id)=>{ setRunId(id); if (project) addRun(project.id, { status: "running" }); setLastEvent("Run started"); }} runId={runId} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • queued action`); }} />} 
         {tab==="Operate" && <Operate role={role} runId={runId} projectId={project?.id} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); }} onEvent={(msg)=>setLastEvent(msg)} onOpenRun={(id)=>{ setRunId(id); setTab("Audit"); }} />} 
         {tab==="Audit" && <Audit role={role} runId={runId} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • proposed action`); }} />} 
-        {tab==="Buy" && <Buy />}
+        {tab==="Buy" && <Buy onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); }} />}
         {tab==="Studio" && <Studio />}
         {tab==="Govern" && <Govern />}
         {tab==="Dashboard" && <Dashboard />}
