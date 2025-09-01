@@ -16,6 +16,7 @@ import Buy from "./screens/Buy";
 import Studio from "./screens/Studio";
 import Govern from "./screens/Govern";
 import Dashboard from "./screens/Dashboard";
+import ChatWidget from "./components/ChatWidget";
 
 type Tab = "Plan"|"Operate"|"Audit"|"Buy"|"Studio"|"Govern"|"Dashboard";
 
@@ -83,6 +84,7 @@ export default function App() {
         {showContext && <ContextDrawer initialProduct={project?.product || context.product} initialAudience={project?.audience || context.audience} onClose={()=>setShowContext(false)} onSave={(ctx)=>{ setShowContext(false); if (project){ const next = upsertProject({ ...project, product: ctx.product, audience: ctx.audience, dailyBudget: ctx.budget, updatedAt: Date.now()}); setProject(next); } setContext(ctx); try { localStorage.setItem("af_ctx", JSON.stringify(ctx)); } catch {}; setLastEvent(`Context set: ${ctx.product}`); }} />}
         <div className="flex items-center gap-2 text-xs text-neutral-400"><input type="checkbox" checked={queueGlobal} onChange={e=>setQueueGlobal(e.target.checked)} /> Global queue (exec)</div>
       </div>
+      <ChatWidget role={role} projectId={project?.id} />
     </div>
   );
 }
