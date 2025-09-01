@@ -2,6 +2,10 @@
 
 Production-grade multi-agent AdOps application that plans, launches, and optimizes paid media with audit-ready governance on AWS. It orchestrates specialized AI agents for targeting, offer design, creative generation and safety, pacing, anomaly response, attribution, LTV forecasting, root-cause analysis, and executive reporting. Built for speed to decision and repeatable outcomes, not slideware.
 
+## Demo (1‑minute navigation)
+
+![AdOps Flightdeck demo](assets/adops-demo.gif)
+
 ---
 
 ## Why this exists
