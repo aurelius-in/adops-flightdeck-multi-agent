@@ -18,8 +18,8 @@ export default function Audit({ role, runId, onQueue }: { role?: string; runId: 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         {prefs.showAttribution && <AttributionPanel attrib={data?.artifacts?.attribution} onQueue={onQueue} compact={prefs.compactAttribution} whatIf={prefs.attributionWhatIf} />}
         {prefs.showLTV && <LTVPanel ltv={data?.artifacts?.ltv} />}
-        {prefs.showReport && <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />}
-        {prefs.showExec && <SummaryCard title="Executive narrative" value={String(data?.artifacts?.execNarrative ?? "")} />}
+        {prefs.showReport && <SummaryCard title="Report" value={summarize("report","summary", data?.artifacts?.report)} />} 
+        {prefs.showExec && <ExecNarrativePanel initial={String(data?.artifacts?.execNarrative ?? "")} onQueue={onQueue} />}
       </div>
       <div className="flex items-center gap-2">
         <button className="px-3 py-2 rounded-lg bg-white text-black">Download report pack</button>
@@ -35,6 +35,19 @@ function SummaryCard({ title, value }:{ title:string; value:string }) {
     <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
       <div className="text-xs text-neutral-400 mb-1">{title}</div>
       <div className="text-sm">{value || ""}</div>
+    </div>
+  );
+}
+
+function ExecNarrativePanel({ initial, onQueue }:{ initial:string; onQueue?: (item:any)=>void }) {
+  const [text, setText] = useState<string>(initial);
+  return (
+    <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950">
+      <div className="text-xs text-neutral-400 mb-1">Executive narrative</div>
+      <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue text-sm" rows={4} value={text} onChange={e=>setText(e.target.value)} placeholder="Add a crisp executive summary..." />
+      <div className="mt-2 flex items-center gap-2">
+        <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=> onQueue && onQueue({ id: cryptoRandomId(), agent: "exec", title: "Save executive narrative", reason: text.slice(0,120) })}>Save narrative</button>
+      </div>
     </div>
   );
 }
@@ -84,11 +97,17 @@ function AttributionBar({ label, low, point, high }:{ label:string; low:number; 
   return (
     <div className="flex items-center gap-2 text-xs">
       <div className="w-20 text-neutral-400 truncate">{label}</div>
-      <div className="flex-1 h-2 bg-neutral-900 rounded relative">
-        <div className="absolute top-0 left-0 h-2 bg-brand-blue/40 rounded" style={{ width: `${highPct}%`, marginLeft: `${lowPct}%` as any }} />
-        <div className="absolute top-[-2px] h-3 w-[2px] bg-white" style={{ left: `${pointPct}%` as any }} />
+      <div className="flex-1">
+        <div className="h-2 bg-neutral-900 rounded relative">
+          <div className="absolute top-0 left-0 h-2 bg-brand-blue/40 rounded" style={{ width: `${highPct}%`, marginLeft: `${lowPct}%` as any }} />
+          <div className="absolute top-[-2px] h-3 w-[2px] bg-white" style={{ left: `${pointPct}%` as any }} />
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-neutral-500">
+          <span>{lowPct}%</span>
+          <span>{pointPct}%</span>
+          <span>{highPct}%</span>
+        </div>
       </div>
-      <div className="w-20 text-right text-neutral-400">{pointPct}%</div>
     </div>
   );
 }

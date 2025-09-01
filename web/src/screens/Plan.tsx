@@ -328,6 +328,7 @@ function iconForAgent(agent:string): string {
 
 function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const a = snapshot?.artifacts || {};
+  const [showJson, setShowJson] = useState(false);
   const header = (
     <div className="text-sm font-medium flex items-center justify-between mb-2">
       <span>{iconForAgent(agent)} {agent}</span>
@@ -335,6 +336,14 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     </div>
   );
   const empty = <div className="text-xs text-neutral-400">{runId?"Populated.":"Populates after run begins."}</div>;
+  const JsonToggle = (data:any) => (
+    data ? (
+      <div className="mt-2">
+        <button className="text-[11px] text-neutral-400 hover:text-white" onClick={()=>setShowJson(v=>!v)}>{showJson?"Hide JSON":"View JSON"}</button>
+        {showJson && <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>}
+      </div>
+    ) : null
+  );
 
   switch (agent) {
     case "Audience DNA": {
@@ -354,6 +363,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Export CSV</button>
               </div>
+              {JsonToggle(a.audienceDNA)}
             </div>
           ) : empty}
         </div>
@@ -382,6 +392,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   </div>
                 </div>
               ))}
+              {JsonToggle(a.offers)}
             </div>
           ) : empty}
         </div>
@@ -403,6 +414,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs">Attach to creative</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Open in editor</button>
               </div>
+              {JsonToggle(a.assets)}
             </div>
           ) : empty}
         </div>
@@ -428,6 +440,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Diff vs previous</button>
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
               </div>
+              {JsonToggle(a.creativeBrief)}
             </div>
           ) : empty}
         </div>
@@ -447,6 +460,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Regenerate</button>
               </div>
+              {JsonToggle(a.creatives)}
             </div>
           ) : empty}
         </div>
@@ -463,9 +477,10 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
             </ol>
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
-            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover;border-brand-blue text-xs">Reorder</button>
+            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Reorder</button>
             <button className="px-2 py-1 rounded bg-white text-black text-xs">Export outline</button>
           </div>
+          {JsonToggle(a.ugc)}
         </div>
       );
     }
@@ -482,8 +497,9 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
             <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
-            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover;border-brand-blue text-xs">Add opening caption</button>
+            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Add opening caption</button>
           </div>
+          {JsonToggle(a.thumbstop)}
         </div>
       );
     }
