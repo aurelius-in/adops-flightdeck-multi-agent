@@ -14,6 +14,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
   const [productMode, setProductMode] = useState<"select"|"create">("select");
   const [productOptions, setProductOptions] = useState<{id:string; name:string}[]>([]);
   const [createFormVisible, setCreateFormVisible] = useState(false);
+  const [planSubTab, setPlanSubTab] = useState<"Overview"|"Modules">("Overview");
 
   async function start() {
     if (isOfflineMode()) { onRun("offline-run"); return; }
@@ -52,6 +53,15 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="lg:col-span-3">
+        <nav className="flex gap-2 text-xs mb-2">
+          {(["Overview","Modules"] as ("Overview"|"Modules")[]).map(t=> (
+            <button key={t} className={`px-3 py-1.5 rounded border font-semibold ${planSubTab===t?"tab-soft":"bg-neutral-900 border-neutral-800 text-white"}`} onClick={()=>setPlanSubTab(t)}>{t}</button>
+          ))}
+        </nav>
+      </div>
+      {planSubTab==="Overview" && (
+      <>
       <div className="lg:col-span-2 card p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-xs text-neutral-400">Product setup</div>
@@ -87,10 +97,9 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
         )}
       </div>
       <div className="card p-4">
-        <div className="text-xs text-neutral-400 mb-2">Quick actions</div>
         <div className="flex gap-2">
-          <button title="Kick off agent workflow for this product and audience" className="flex-1 btn-soft text-xs" onClick={start}>Run without saving</button>
-          <button className="btn-soft text-xs" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
+          <button title="Kick off agent workflow for this product and audience" className="btn-soft text-[12px] px-4 py-2" onClick={start}>Run without saving</button>
+          <button className="btn-soft text-[12px] px-4 py-2 min-w-[128px]" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
         </div>
         {hasContext && (
           <div className="mt-3 text-sm md:text-base text-neutral-200 space-y-1">
@@ -120,8 +129,16 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
           )}
         </div>
       </div>
-      <AgentGrid title="Target & offer" agents={allowedPlanAgents(role).filter(a=>["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
-      <AgentGrid title="Creative & guardrails" agents={allowedPlanAgents(role).filter(a=>["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      </>
+      )}
+      {planSubTab==="Modules" && (
+      <>
+      <div className="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <AgentGrid title="Target & offer" agents={allowedPlanAgents(role).filter(a=>["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+        <AgentGrid title="Creative & guardrails" agents={allowedPlanAgents(role).filter(a=>["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      </div>
+      </>
+      )}
     </div>
   );
 }
@@ -152,9 +169,9 @@ const AGENT_DISPLAY: Record<string, "tile"|"card"> = {
 
 function AgentGrid({ title, agents, runId, snapshot, onQueue}:{title:string; agents:string[]; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   return (
-    <div className="lg:col-span-3 card p-4">
+    <div className="card p-4 h-full">
       <div className="font-medium mb-3 text-brand-blue">{title}</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
         {agents.map(a=>{
           const mode = AGENT_DISPLAY[a] ?? "tile";
           return mode === "card"
@@ -354,7 +371,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Audience DNA": {
       const cohorts = Array.isArray(a.audienceDNA) ? a.audienceDNA.slice(0,3) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {cohorts.length ? (
             <div className="space-y-1 text-xs">
@@ -428,7 +445,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Creative brief": {
       const b = a.creativeBrief;
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {b ? (
             <div className="text-xs space-y-1">

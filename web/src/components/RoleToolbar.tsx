@@ -1,16 +1,16 @@
 export default function RoleToolbar({ role, onQueue }:{ role:string; onQueue:(item:{id:string; agent:string; title:string; reason?:string; impact?:string})=>void }) {
   const common = (
     <div className="flex items-center gap-2">
-      <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs font-semibold" onClick={()=>onQueue(makeItem("notes","Add note","Context updated"))}>Add note</button>
-      <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs font-semibold" onClick={()=>onQueue(makeItem("ticket","Create ticket","Assigned to ops"))}>Create ticket</button>
+      <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-[12px] font-semibold" onClick={()=>onQueue(makeItem("notes","Add note","Context updated"))}>Add note</button>
+      <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-[12px] font-semibold" onClick={()=>onQueue(makeItem("ticket","Create ticket","Assigned to ops"))}>Create ticket</button>
     </div>
   );
   switch (role) {
     case "Ad Rep":
       return (
         <BarWrap label="Ad Rep tools">
-          <button className="btn-soft text-xs" onClick={()=>onQueue(makeItem("creative","Request new variant","+2 candidates"))}>Request variant</button>
-          <button className="btn-soft text-xs" onClick={()=>onQueue(makeItem("pacing","Apply reallocation","+3% ROAS"))}>Apply reallocation</button>
+          <button className="btn-soft text-[12px] px-3 py-2" onClick={()=>onQueue(makeItem("creative","Request new variant","+2 candidates"))}>Request variant</button>
+          <button className="btn-soft text-[12px] px-3 py-2" onClick={()=>onQueue(makeItem("pacing","Apply reallocation","+3% ROAS"))}>Apply reallocation</button>
           {common}
         </BarWrap>
       );
