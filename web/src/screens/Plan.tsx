@@ -47,8 +47,8 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
             <label className="text-xs text-neutral-400">Product</label>
             {productMode==="select" ? (
               <div className="flex items-center gap-2">
-                <select className="flex-1 bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" onChange={(e)=>{ if (e.target.value==="__create__"){ setProduct(""); setAudience(""); setBudget(0); setRules(""); setProductMode("create"); return;} const p = listProducts().find(x=>x.id===e.target.value); if (p){ setProduct(p.name||""); setAudience(p.audience||""); setBudget(p.dailyBudget||0); setRules(p.brandRules||""); } }}>
-                  <option value="__create__">Create product…</option>
+                <select className="flex-1 bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" onChange={(e)=>{ const p = listProducts().find(x=>x.id===e.target.value); if (p){ setProduct(p.name||""); setAudience(p.audience||""); setBudget(p.dailyBudget||0); setRules(p.brandRules||""); } }}>
+                  <option value="">Select product…</option>
                   {productOptions.map(opt=> <option key={opt.id} value={opt.id}>{opt.name}</option>)}
                 </select>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>setProductMode("create")}>Create Product</button>
