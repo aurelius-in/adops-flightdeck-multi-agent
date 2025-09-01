@@ -11,7 +11,7 @@ export default function TodayDrawer({ role, onClose, onAction }:{ role:string; o
           {tasks.map(t=> (
             <li key={t} className="border border-neutral-800 rounded p-2 bg-neutral-950 flex items-center justify-between">
               <span>{t}</span>
-              <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onAction(t)}>Start</button>
+              <button className="btn-soft text-xs" onClick={()=>onAction(t)}>Start</button>
             </li>
           ))}
         </ul>

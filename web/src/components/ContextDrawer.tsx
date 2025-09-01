@@ -26,7 +26,7 @@ export default function ContextDrawer({ initialProduct, initialAudience, onClose
             <input type="number" className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={budget} onChange={e=>setBudget(parseInt(e.target.value||"0"))} />
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onSave({ product, audience, budget})}>Save</button>
+            <button className="btn-soft" onClick={()=>onSave({ product, audience, budget})}>Save</button>
           </div>
         </div>
       </div>

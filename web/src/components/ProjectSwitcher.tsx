@@ -40,7 +40,7 @@ export default function ProjectSwitcher({ onSelect }:{ onSelect:(p:Project)=>voi
         <div className="absolute z-30 mt-1 w-80 bg-neutral-950 border border-neutral-800 rounded shadow-lg p-2">
           <div className="flex items-center gap-2 mb-2">
             <input placeholder="Search projects" className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue text-xs" value={q} onChange={e=>setQ(e.target.value)} />
-            <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={handleNew}>New</button>
+            <button className="btn-soft text-xs" onClick={handleNew}>New</button>
           </div>
           <div className="max-h-64 overflow-auto space-y-1">
             {filtered.length===0 && <div className="text-xs text-neutral-500 p-2">No projects. Create one.</div>}

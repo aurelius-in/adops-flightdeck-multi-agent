@@ -87,7 +87,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
               <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={rules} onChange={e=>setRules(e.target.value)} />
             </div>
             <div className="col-span-2 flex items-center gap-2 text-xs">
-              <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setCreateFormVisible(false); setProductMode("select"); }}>Save product</button>
+              <button className="btn-soft text-xs" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setCreateFormVisible(false); setProductMode("select"); }}>Save product</button>
               <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>setCreateFormVisible(false)}>Cancel</button>
             </div>
           </div>
@@ -115,8 +115,8 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
           <div className="font-medium text-brand-blue">Key outcomes</div>
           <div className="flex items-center gap-2 text-xs">
             <span className="text-neutral-400">View for</span>
-            <button className={`px-2 py-1 rounded border ${persona==="Ad Rep"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Ad Rep")}>Ad Rep</button>
-            <button className={`px-2 py-1 rounded border ${persona==="Executive"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Executive")}>Executive</button>
+            <button className={`px-2 py-1 rounded border ${persona==="Ad Rep"?"border-white bg-white text-black":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Ad Rep")}>Ad Rep</button>
+            <button className={`px-2 py-1 rounded border ${persona==="Executive"?"border-white bg-white text-black":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Executive")}>Executive</button>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -382,7 +382,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 </label>
               ))}
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Export CSV</button>
               </div>
               {JsonToggle(a.audienceDNA)}
@@ -410,7 +410,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Add ${o.label} to Offer Catalog` })}>Add to Offer Catalog</button>
-                    <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Send ${o.label} to Experiment`, impact: "+2% iROAS" })}>Send to Experiment</button>
+                    <button className="btn-soft" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Send ${o.label} to Experiment`, impact: "+2% iROAS" })}>Send to Experiment</button>
                   </div>
                 </div>
               ))}
@@ -433,7 +433,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 ))}
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs">Attach to creative</button>
+                <button className="btn-soft text-xs">Attach to creative</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Open in editor</button>
               </div>
               {JsonToggle(a.assets)}
@@ -460,7 +460,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   <option>v2</option>
                 </select>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Diff vs previous</button>
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
               </div>
               {JsonToggle(a.creativeBrief)}
             </div>
@@ -479,7 +479,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <div key={idx} className="truncate">{v.headline} <span className="text-neutral-500">• {v.cta}</span></div>
               ))}
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Regenerate</button>
               </div>
               {JsonToggle(a.creatives)}
@@ -500,7 +500,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Reorder</button>
-            <button className="px-2 py-1 rounded bg-white text-black text-xs">Export outline</button>
+            <button className="btn-soft text-xs">Export outline</button>
           </div>
           {JsonToggle(a.ugc)}
         </div>
@@ -518,7 +518,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
             </div>
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
-            <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
+            <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Add opening caption</button>
           </div>
           {JsonToggle(a.thumbstop)}
