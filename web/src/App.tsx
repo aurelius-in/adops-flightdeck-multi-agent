@@ -12,8 +12,12 @@ import RoleToolbar from "./components/RoleToolbar";
 import ContextDrawer from "./components/ContextDrawer";
 import { Project, seedSampleProjectsIfEmpty, listProjects, getLastProjectId, upsertProject, addRun } from "./lib/projects";
 import { allowedTabs } from "./lib/roles";
+import Buy from "./screens/Buy";
+import Studio from "./screens/Studio";
+import Govern from "./screens/Govern";
+import Dashboard from "./screens/Dashboard";
 
-type Tab = "Plan"|"Operate"|"Audit";
+type Tab = "Plan"|"Operate"|"Audit"|"Buy"|"Studio"|"Govern"|"Dashboard";
 
 export default function App() {
   const [runId, setRunId] = useState<string>("");
@@ -62,9 +66,15 @@ export default function App() {
             <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
           ))}
         </nav>
+        {/* Auto-select a valid tab if current tab is not permitted by role */}
+        {!(allowedTabs(role) as Tab[]).includes(tab) && setTab((allowedTabs(role) as Tab[])[0])}
         {tab==="Plan" && <Plan role={role} project={project || undefined} onSaveProject={(updates)=>{ if (!project) return; const next = upsertProject({ ...project, product: updates.product, audience: updates.audience, dailyBudget: updates.dailyBudget, brandRules: updates.brandRules, updatedAt: Date.now() }); setProject(next); setContext({ product: next.product, audience: next.audience, budget: next.dailyBudget }); setLastEvent("Project saved"); }} onRun={(id)=>{ setRunId(id); if (project) addRun(project.id, { status: "running" }); setLastEvent("Run started"); }} runId={runId} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • queued action`); }} />} 
         {tab==="Operate" && <Operate role={role} runId={runId} projectId={project?.id} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); }} onEvent={(msg)=>setLastEvent(msg)} onOpenRun={(id)=>{ setRunId(id); setTab("Audit"); }} />} 
         {tab==="Audit" && <Audit role={role} runId={runId} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • proposed action`); }} />} 
+        {tab==="Buy" && <Buy />}
+        {tab==="Studio" && <Studio />}
+        {tab==="Govern" && <Govern />}
+        {tab==="Dashboard" && <Dashboard />}
 
         {showLib && <Library onClose={()=>setShowLib(false)} runId={runId} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • added`); }} />} 
         {showInvestigate && <Investigate onClose={()=>setShowInvestigate(false)} runId={runId} onPropose={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • proposed action`); }} />} 
