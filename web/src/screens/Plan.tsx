@@ -339,8 +339,13 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
   const JsonToggle = (data:any) => (
     data ? (
       <div className="mt-2">
-        <button className="text-[11px] text-neutral-400 hover:text-white" onClick={()=>setShowJson(v=>!v)}>{showJson?"Hide JSON":"View JSON"}</button>
-        {showJson && <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>}
+        <button className="disclosure-btn" onClick={()=>setShowJson(v=>!v)}>
+          <span className={`caret ${showJson?"caret-open":""}`}>▶</span>
+          <span>Details</span>
+        </button>
+        <div className={`disclosure-content ${showJson?"disclosure-open":"disclosure-closed"}`}>
+          <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>
+        </div>
       </div>
     ) : null
   );

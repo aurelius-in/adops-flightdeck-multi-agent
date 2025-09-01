@@ -249,8 +249,13 @@ function JsonToggle({ data }:{ data:any }) {
   if (!data) return null;
   return (
     <div className="mt-2">
-      <button className="text-[11px] text-neutral-400 hover:text-white" onClick={()=>setOpen(v=>!v)}>{open?"Hide JSON":"View JSON"}</button>
-      {open && <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>}
+      <button className="disclosure-btn" onClick={()=>setOpen(v=>!v)}>
+        <span className={`caret ${open?"caret-open":""}`}>▶</span>
+        <span>Details</span>
+      </button>
+      <div className={`disclosure-content ${open?"disclosure-open":"disclosure-closed"}`}>
+        <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>
+      </div>
     </div>
   );
 }

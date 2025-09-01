@@ -53,7 +53,7 @@ export default function RunHeader({
         <div className="w-56" />
         <div className="text-xs">
           <div className="text-neutral-400 mb-0.5">My Role</div>
-          <select className="bg-neutral-950 border border-neutral-800 rounded p-1" value={role} onChange={e=>onRoleChange(e.target.value)}>
+          <select aria-label="Select my role" className="bg-neutral-950 border border-neutral-800 rounded p-1" value={role} onChange={e=>onRoleChange(e.target.value)}>
             <option>Ad Rep</option>
             <option>Executive</option>
             <option>Creative</option>
@@ -61,16 +61,16 @@ export default function RunHeader({
             <option>Media Buyer</option>
           </select>
         </div>
-        <nav className="flex gap-2 ml-2">
+        <nav className="flex gap-2 ml-2 flex-wrap">
           {threeTabs.map(tn=> (
             <button key={tn} title={tn==="Plan"?"Define product, audience, budget and generate creatives":tn==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} onClick={()=>onTabChange(tn)} className={`px-3 py-2 rounded-lg border text-xs ${tab===tn?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{tn}</button>
           ))}
         </nav>
       </div>
       <div className="flex items-center gap-3">
-        <button className="px-2.5 py-1.5 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition text-xs" onClick={onOpenQueue}>📥 Action Queue</button>
+        <button aria-label="Open Action Queue" className="px-2.5 py-1.5 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition text-xs" onClick={onOpenQueue}>📥 <span className="hidden sm:inline">Action Queue</span></button>
         {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
-        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
+        <button aria-label={isOffline?"Go live":"Go offline"} className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
       </div>
     </div>
   );
