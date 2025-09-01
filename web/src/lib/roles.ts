@@ -60,19 +60,19 @@ export function auditPreferences(role?: string) {
   return roleConfig[role as UserRole];
 }
 
-export function allowedTabs(role?: string): ("Plan"|"Operate"|"Audit")[] {
+export function allowedTabs(role?: string): ("Plan"|"Operate"|"Audit"|"Buy"|"Studio"|"Govern"|"Dashboard")[] {
   // Framework for role-based tab visibility. Adjust per org policy.
   switch (role as UserRole) {
     case "Ad Rep":
       return ["Plan","Operate","Audit"]; // full hands-on flow
     case "Creative":
-      return ["Plan","Operate"]; // build and monitor creative, no audit panel by default
+      return ["Studio","Plan","Operate"]; // build and monitor creative
     case "Compliance":
-      return ["Plan","Audit"]; // plan guardrails + audit/export, no operate cockpit
+      return ["Govern","Plan","Audit"]; // guardrails + audit/export
     case "Media Buyer":
-      return ["Operate","Plan","Audit"]; // ops-first workflow
+      return ["Buy","Operate","Plan","Audit"]; // buying cockpit first
     case "Executive":
-      return ["Operate","Audit","Plan"]; // high-level first, plan optional
+      return ["Dashboard","Operate","Audit","Plan"]; // high-level first
     default:
       return ["Plan","Operate","Audit"];
   }
