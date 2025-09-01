@@ -42,6 +42,10 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
     return filtered.length ? filtered[filtered.length-1].data : null;
   };
 
+  const recent = (agent:string, type?:string, n:number=3) => {
+    return events.filter(e=>e.agent===agent && (!type || e.type===type)).slice(-n).reverse();
+  };
+
   const ctrSpark = useMemo(()=>{
     const ctrs:number[] = [];
     events.filter(e=>e.agent==="anomaly" && e.data?.metrics).forEach(e=>{
@@ -77,7 +81,11 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
         {allowedOperateBlocks(role).some(([a])=>a==="experiment") && (
         <Card title="⏱ Experiment planner">
           <div className="text-sm mb-2">{summarize("experiment","design", get("experiment","design"))}</div>
-          <button className="px-3 py-2 rounded bg-white text-black">Start experiment</button>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-2 rounded bg-white text-black text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "experiment", title: "Propose experiment", impact: "+1.5% iROAS (est.)" })}>Propose experiment</button>
+          </div>
+          <TinyLog items={recent("experiment")} />
+          <JsonToggle data={get("experiment")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="pacing") && (
@@ -104,11 +112,13 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
                 </div>
               ))}
               <div className="flex items-center gap-2">
-                <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
-                <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue">Re-route</button>
+                <button className="px-3 py-2 rounded bg-white text-black text-xs" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "pacing", title: "Apply reallocation", impact: "+3% ROAS" })}>Apply reallocation</button>
+                <button className="px-3 py-2 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Re-route</button>
               </div>
             </div>
           </div>
+          <TinyLog items={recent("pacing")} />
+          <JsonToggle data={get("pacing")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="spo") && (
@@ -117,12 +127,13 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
           <div className="flex items-center gap-2 mt-2">
             <button className="px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "spo", title: "Prune B>DSP2", impact: "-1.2% IVT" })}>Prune path</button>
           </div>
+          <JsonToggle data={get("spo")}/>
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="roadmap") && (
         <Card title="⏱ Roadmap">
           <div className="grid grid-cols-4 gap-2 text-xs">
-            {(["Backlog","Next","Running","Done"]).map(col=> (
+            {["Backlog","Next","Running","Done"].map(col=> (
               <div key={col} className="border border-neutral-800 rounded p-2">
                 <div className="text-[11px] text-neutral-400 mb-1">{col}</div>
                 <div className="bg-neutral-900 rounded p-1 mb-1">Frame test</div>
@@ -130,6 +141,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
               </div>
             ))}
           </div>
+          <JsonToggle data={get("roadmap")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="anomaly") && (
@@ -141,12 +153,16 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
               <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent:"anomaly", title:"Boost variant 1", reason:"High CTR" })}>Boost</button>
             </div>
           </div>
+          <TinyLog items={recent("anomaly")}/>
+          <JsonToggle data={get("anomaly")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="rootcause") && (
         <Card title="⚠ Root-cause sleuth">
           <Bar data={[{label:"Creative fatigue", value:34},{label:"Audience shift", value:22},{label:"Bid pressure", value:18}]} />
-          <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Apply proposed fixes", impact: "+5% CTR" })}>Propose fixes</button>
+          <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "rootcause", title: "Propose fixes", impact: "+5% CTR" })}>Propose fixes</button>
+          <TinyLog items={recent("rootcause")} />
+          <JsonToggle data={get("rootcause")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="negatives") && (
@@ -159,6 +175,8 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
               </div>
             ))}
           </div>
+          <TinyLog items={recent("negatives")} />
+          <JsonToggle data={get("negatives")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="fraud") && (
@@ -168,6 +186,8 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
             <div className="text-xs text-neutral-400">IVT rate ~1.2%</div>
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "fraud", title: "Exclude suspect segment", impact: "-1% IVT" })}>Exclude segment</button>
+          <TinyLog items={recent("fraud")} />
+          <JsonToggle data={get("fraud")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="budget") && (
@@ -181,6 +201,8 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
             ))}
           </div>
           <button className="mt-2 px-3 py-2 rounded bg-white text-black" onClick={()=>onQueue({ id: cryptoRandomId(), agent: "budget", title: "Save caps", impact: "Hold daily max" })}>Save caps</button>
+          <TinyLog items={recent("budget")} />
+          <JsonToggle data={get("budget")} />
         </Card>
         )}
         {allowedOperateBlocks(role).some(([a])=>a==="audit") && (
@@ -193,6 +215,7 @@ export default function Operate({ role, runId, projectId, onQueue, onEvent, onOp
               </li>
             ))}
           </ul>
+          <JsonToggle data={get("audit")} />
         </Card>
         )}
       </div>
@@ -205,6 +228,31 @@ function Card({ title, children, className }: any) {
     <div className="font-medium mb-2 text-brand-blue">{title}</div>
     <div>{children}</div>
   </div>;
+}
+
+function TinyLog({ items }:{ items: Event[] }) {
+  if (!items || items.length===0) return null;
+  return (
+    <ul className="mt-2 text-[11px] text-neutral-500 space-y-0.5">
+      {items.map((e,i)=> (
+        <li key={i} className="flex items-center justify-between gap-2">
+          <span className="truncate">{summarize(e.agent, e.type, e.data)}</span>
+          <span className="whitespace-nowrap">{timeAgo(e.ts)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function JsonToggle({ data }:{ data:any }) {
+  const [open, setOpen] = useState(false);
+  if (!data) return null;
+  return (
+    <div className="mt-2">
+      <button className="text-[11px] text-neutral-400 hover:text-white" onClick={()=>setOpen(v=>!v)}>{open?"Hide JSON":"View JSON"}</button>
+      {open && <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>}
+    </div>
+  );
 }
 
 function cryptoRandomId(): string {

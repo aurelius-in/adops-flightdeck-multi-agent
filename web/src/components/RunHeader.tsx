@@ -42,12 +42,8 @@ export default function RunHeader({
     <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
       <div className="flex items-center gap-3">
         <img src="/logo-af.gif" alt="AdOps Flightdeck" className="h-12 w-auto" />
-        {/* Branding text removed to avoid redundancy with logo */}
-        {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
-        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
-        <ProjectSwitcher onSelect={(p)=>onProjectSelect?.(p)} />
-        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenContext}>Context</button>
-        <div className="ml-2 text-xs">
+        <div className="w-56" />
+        <div className="text-xs">
           <div className="text-neutral-400 mb-0.5">User Role</div>
           <select className="bg-neutral-950 border border-neutral-800 rounded p-1" value={role} onChange={e=>onRoleChange(e.target.value)}>
             <option>Ad Rep</option>
@@ -57,29 +53,11 @@ export default function RunHeader({
             <option>Media Buyer</option>
           </select>
         </div>
-        {product && (
-          <div className="ml-3 text-xs border border-neutral-800 rounded px-2 py-1 bg-neutral-900" title="Current context">
-            <span className="text-neutral-400">Context:</span> <span className="text-white">{product}</span> {typeof budget==="number" && <span className="text-neutral-400 ml-1">• {new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(budget)}</span>}
-          </div>
-        )}
-        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onOpenToday}>Today</button>
       </div>
       <div className="flex items-center gap-3">
-        {(role === "Ad Rep" ? [
-          { label: "ROAS", value: perf?.roas ? String(perf.roas) : "-" },
-          { label: "CPA", value: perf?.cpa ? formatCurrency(perf.cpa) : "-" },
-          { label: "Spend", value: formatCurrency(perf?.spend) },
-          { label: "Conv", value: String(perf?.conversions ?? "-") },
-        ] : [
-          { label: "Spend", value: formatCurrency(perf?.spend) },
-          { label: "Conv", value: String(perf?.conversions ?? "-") },
-          { label: "ROAS", value: perf?.roas ? String(perf.roas) : "-" },
-          { label: "CPA", value: perf?.cpa ? formatCurrency(perf.cpa) : "-" },
-        ]).map(t => (
-          <PerfTile key={t.label} label={t.label} value={String(t.value)} />
-        ))}
-        <div className="text-xs text-neutral-400 max-w-[260px] truncate" title={lastEvent || ""}>{lastEvent || "Waiting for activity..."}</div>
-        <button className="px-3 py-2 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition" onClick={onOpenQueue}>Action Queue</button>
+        <button className="px-2.5 py-1.5 rounded-lg bg-brand-purple/20 text-brand-blue hover:bg-brand-purple/30 transition text-xs" onClick={onOpenQueue}>Action Queue</button>
+        {isOffline && <span className="text-xs text-brand-blue/80 border border-brand-blue/40 rounded px-2 py-0.5">offline</span>}
+        <button className="px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={onToggleOffline}>{isOffline?"Go live":"Go offline"}</button>
       </div>
     </div>
   );

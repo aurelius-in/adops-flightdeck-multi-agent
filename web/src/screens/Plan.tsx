@@ -13,6 +13,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
   const [persona, setPersona] = useState<"Ad Rep"|"Executive">("Ad Rep");
   const [productMode, setProductMode] = useState<"select"|"create">("select");
   const [productOptions, setProductOptions] = useState<{id:string; name:string}[]>([]);
+  const [createFormVisible, setCreateFormVisible] = useState(false);
 
   async function start() {
     if (isOfflineMode()) { onRun("offline-run"); return; }
@@ -39,50 +40,66 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
     return () => { active = false; clearInterval(t); };
   }, [runId]);
 
+  // Sync local edit fields when project changes (e.g., from header selection)
+  useEffect(() => {
+    setProduct(project?.product || "");
+    setAudience(project?.audience || "");
+    setBudget(project?.dailyBudget || 0);
+    setRules(project?.brandRules || "");
+  }, [project?.product, project?.audience, project?.dailyBudget, project?.brandRules]);
+
+  const hasContext = Boolean(product || audience || budget || rules);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 card p-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-neutral-400">Product</label>
-            {productMode==="select" ? (
-              <div className="flex items-center gap-2">
-                <select className="flex-1 bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" onChange={(e)=>{ const p = listProducts().find(x=>x.id===e.target.value); if (p){ setProduct(p.name||""); setAudience(p.audience||""); setBudget(p.dailyBudget||0); setRules(p.brandRules||""); } }}>
-                  <option value="">Select product…</option>
-                  {productOptions.map(opt=> <option key={opt.id} value={opt.id}>{opt.name}</option>)}
-                </select>
-                <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>setProductMode("create")}>Create Product</button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <input placeholder="Product name" className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={product} onChange={e=>setProduct(e.target.value)} />
-                <div className="flex items-center gap-2 text-xs">
-                  <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setProductMode("select"); }}>Save product</button>
-                  <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>setProductMode("select")}>Cancel</button>
-                </div>
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="text-xs text-neutral-400">Daily budget</label>
-            <input className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={budget} type="number" onChange={e=>setBudget(+e.target.value)} />
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-neutral-400">Audience</label>
-            <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={audience} onChange={e=>setAudience(e.target.value)} />
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-neutral-400">Brand guardrails</label>
-            <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={rules} onChange={e=>setRules(e.target.value)} />
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-xs text-neutral-400">Product setup</div>
+          {!createFormVisible && (
+            <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>setCreateFormVisible(true)}>Create Product</button>
+          )}
         </div>
+        {createFormVisible && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <input placeholder="Product name" className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={product} onChange={e=>setProduct(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs text-neutral-400">Daily budget</label>
+              <input className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={budget} type="number" onChange={e=>setBudget(+e.target.value)} />
+            </div>
+            <div className="col-span-2">
+              <label className="text-xs text-neutral-400">Audience</label>
+              <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={audience} onChange={e=>setAudience(e.target.value)} />
+            </div>
+            <div className="col-span-2">
+              <label className="text-xs text-neutral-400">Brand guardrails</label>
+              <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={rules} onChange={e=>setRules(e.target.value)} />
+            </div>
+            <div className="col-span-2 flex items-center gap-2 text-xs">
+              <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setCreateFormVisible(false); setProductMode("select"); }}>Save product</button>
+              <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>setCreateFormVisible(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
+        {!createFormVisible && (
+          <div className="text-xs text-neutral-400">Use the product selector in the header to choose an existing product.</div>
+        )}
       </div>
       <div className="card p-4">
         <div className="text-xs text-neutral-400 mb-2">Quick actions</div>
         <div className="flex gap-2">
-          <button title="Kick off agent workflow for this product and audience" className="flex-1 px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80" onClick={start}>Run without saving</button>
-          <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
+          <button title="Kick off agent workflow for this product and audience" className="flex-1 px-3 py-2 rounded-lg bg-white text-black hover:bg-brand-blue/80 text-xs" onClick={start}>Run without saving</button>
+          <button className="px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
         </div>
+        {hasContext && (
+          <div className="mt-3 text-sm md:text-base text-neutral-200 space-y-1">
+            <div><span className="text-neutral-100 font-semibold">Product:</span> <span className="font-medium">{product || "—"}</span></div>
+            <div><span className="text-neutral-100 font-semibold">Audience:</span> <span className="font-medium">{audience ? audience.slice(0,90) + (audience.length>90?"…":"") : "—"}</span></div>
+            <div><span className="text-neutral-100 font-semibold">Daily budget:</span> <span className="font-medium">{String(budget || "—")}</span></div>
+            <div><span className="text-neutral-100 font-semibold">Brand guardrails:</span> <span className="font-medium">{rules ? rules : "—"}</span></div>
+          </div>
+        )}
       </div>
       <div className="lg:col-span-3 card p-4">
         <div className="flex items-center justify-between mb-2">
@@ -311,6 +328,7 @@ function iconForAgent(agent:string): string {
 
 function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   const a = snapshot?.artifacts || {};
+  const [showJson, setShowJson] = useState(false);
   const header = (
     <div className="text-sm font-medium flex items-center justify-between mb-2">
       <span>{iconForAgent(agent)} {agent}</span>
@@ -318,6 +336,14 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     </div>
   );
   const empty = <div className="text-xs text-neutral-400">{runId?"Populated.":"Populates after run begins."}</div>;
+  const JsonToggle = (data:any) => (
+    data ? (
+      <div className="mt-2">
+        <button className="text-[11px] text-neutral-400 hover:text-white" onClick={()=>setShowJson(v=>!v)}>{showJson?"Hide JSON":"View JSON"}</button>
+        {showJson && <pre className="mt-1 text-[10px] bg-neutral-950 border border-neutral-800 rounded p-2 overflow-auto max-h-48">{JSON.stringify(data,null,2)}</pre>}
+      </div>
+    ) : null
+  );
 
   switch (agent) {
     case "Audience DNA": {
@@ -337,6 +363,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Export CSV</button>
               </div>
+              {JsonToggle(a.audienceDNA)}
             </div>
           ) : empty}
         </div>
@@ -365,6 +392,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   </div>
                 </div>
               ))}
+              {JsonToggle(a.offers)}
             </div>
           ) : empty}
         </div>
@@ -386,6 +414,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs">Attach to creative</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Open in editor</button>
               </div>
+              {JsonToggle(a.assets)}
             </div>
           ) : empty}
         </div>
@@ -411,6 +440,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Diff vs previous</button>
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
               </div>
+              {JsonToggle(a.creativeBrief)}
             </div>
           ) : empty}
         </div>
@@ -430,6 +460,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Regenerate</button>
               </div>
+              {JsonToggle(a.creatives)}
             </div>
           ) : empty}
         </div>
@@ -449,6 +480,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Reorder</button>
             <button className="px-2 py-1 rounded bg-white text-black text-xs">Export outline</button>
           </div>
+          {JsonToggle(a.ugc)}
         </div>
       );
     }
@@ -467,6 +499,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
             <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Add opening caption</button>
           </div>
+          {JsonToggle(a.thumbstop)}
         </div>
       );
     }
