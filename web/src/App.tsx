@@ -65,7 +65,7 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-neutral-950 text-white role-${role.replace(/\s+/g,'').toLowerCase()}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
-        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} onProjectSelect={(p)=>{ setProject(p); setContext({ product: p.product, audience: p.audience, budget: p.dailyBudget }); }} />
+        <RunHeader product={context.product} budget={context.budget} isOffline={offline} runId={runId} lastEvent={lastEvent} perf={perf} onToggleOffline={()=>{ window.location.search = offline?"":"?offline=1"; }} onOpenQueue={()=>setShowQueue(true)} role={role} onRoleChange={(r)=>{ setRole(r); try { localStorage.setItem("af_role", r);} catch {} }} onOpenToday={()=>setShowToday(true)} onOpenContext={()=>setShowContext(true)} onProjectSelect={(p)=>{ setProject(p); setContext({ product: p.product, audience: p.audience, budget: p.dailyBudget }); }} tab={tab} onTabChange={(t)=>setTab(t)} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="flex items-center gap-2">
@@ -119,14 +119,6 @@ export default function App() {
         </div>
 
         <RoleToolbar role={role} onQueue={(item)=>{ const it = project? { ...item, projectId: project.id } : item; setQueue(q=>[...q, it]); setLastEvent(`${item.agent} • queued action`); }} />
-        <div className="flex items-center justify-between">
-          <nav className="flex gap-2">
-            {(allowedTabs(role) as Tab[]).map(t=> (
-              <button title={t==="Plan"?"Define product, audience, budget and generate creatives":t==="Operate"?"Watch pacing, delivery and anomaly handling":"Review attribution, LTV and signed artifacts"} key={t} onClick={()=>setTab(t)} className={`px-3 py-2 rounded-lg border ${tab===t?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`}>{t}</button>
-            ))}
-          </nav>
-          <div />
-        </div>
 
         {/* Auto-select a valid tab if current tab is not permitted by role */}
         {!(allowedTabs(role) as Tab[]).includes(tab) && setTab((allowedTabs(role) as Tab[])[0])}
