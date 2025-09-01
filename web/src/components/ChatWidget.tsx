@@ -46,7 +46,7 @@ export default function ChatWidget({ projectId, role }:{ projectId?:string; role
           </div>
           <div className="p-2 border-t border-neutral-800 flex items-center gap-2">
             <input className="flex-1 bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue text-xs" placeholder="Ask or instruct…" value={q} onChange={e=>setQ(e.target.value)} onKeyDown={(e)=>{ if (e.key==='Enter') send(); }} />
-            <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={send}>Send</button>
+            <button className="btn-soft text-xs" onClick={send}>Send</button>
           </div>
         </div>
       )}

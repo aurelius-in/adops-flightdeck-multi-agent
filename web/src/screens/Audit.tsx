@@ -83,7 +83,7 @@ function AttributionPanel({ attrib, onQueue, compact, whatIf }:{ attrib:any; onQ
             <span>{pct}%</span>
           </div>
           <div className="text-[11px] text-neutral-400 mb-2">Projected iROAS {projectedIROAS}</div>
-          <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=> onQueue && onQueue({ id: cryptoRandomId(), agent: "attrib", title: `Propose shift ${pct}% ${from} → ${to}`, impact: `Projected iROAS ${projectedIROAS}` })}>Propose shift</button>
+          <button className="btn-soft text-xs" onClick={()=> onQueue && onQueue({ id: cryptoRandomId(), agent: "attrib", title: `Propose shift ${pct}% ${from} → ${to}`, impact: `Projected iROAS ${projectedIROAS}` })}>Propose shift</button>
         </div>
       )}
     </div>

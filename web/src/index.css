@@ -26,6 +26,15 @@
   @apply border border-neutral-800 text-black font-semibold rounded-lg transition;
 }
 .btn-soft:hover { @apply border-brand-blue; }
+.tab-soft {
+  --tab-c1: #AFC8FF; /* muted light blue */
+  --tab-c2: #B4BEC8; /* soft grey */
+  background: linear-gradient(135deg, var(--tab-c1) 0%, var(--tab-c2) 100%);
+  background-size: 200% 200%;
+  animation: btnSweep 8s ease-in-out infinite;
+  @apply border border-neutral-800 text-black rounded-lg transition;
+}
+.tab-soft:hover { @apply border-brand-blue; }
 @media (prefers-reduced-motion: reduce) {
   .btn-soft { animation: none; }
 }

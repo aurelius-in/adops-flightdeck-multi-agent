@@ -14,6 +14,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
   const [productMode, setProductMode] = useState<"select"|"create">("select");
   const [productOptions, setProductOptions] = useState<{id:string; name:string}[]>([]);
   const [createFormVisible, setCreateFormVisible] = useState(false);
+  const [planSubTab, setPlanSubTab] = useState<"Overview"|"Modules">("Overview");
 
   async function start() {
     if (isOfflineMode()) { onRun("offline-run"); return; }
@@ -52,6 +53,15 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="lg:col-span-3">
+        <nav className="flex gap-2 text-xs mb-2">
+          {(["Overview","Modules"] as ("Overview"|"Modules")[]).map(t=> (
+            <button key={t} className={`px-3 py-1.5 rounded border font-semibold ${planSubTab===t?"tab-soft":"bg-neutral-900 border-neutral-800 text-white"}`} onClick={()=>setPlanSubTab(t)}>{t}</button>
+          ))}
+        </nav>
+      </div>
+      {planSubTab==="Overview" && (
+      <>
       <div className="lg:col-span-2 card p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-xs text-neutral-400">Product setup</div>
@@ -77,7 +87,7 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
               <textarea className="w-full bg-neutral-950 border border-neutral-800 p-2 rounded outline-none focus:border-brand-blue" value={rules} onChange={e=>setRules(e.target.value)} />
             </div>
             <div className="col-span-2 flex items-center gap-2 text-xs">
-              <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setCreateFormVisible(false); setProductMode("select"); }}>Save product</button>
+              <button className="btn-soft text-xs" onClick={()=>{ const p = createProductTemplate({ name: product, audience, dailyBudget: budget, brandRules: rules }); setProductOptions(listProducts().map(x=>({ id:x.id, name:x.name }))); updateProjectLocal(); setCreateFormVisible(false); setProductMode("select"); }}>Save product</button>
               <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>setCreateFormVisible(false)}>Cancel</button>
             </div>
           </div>
@@ -87,10 +97,9 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
         )}
       </div>
       <div className="card p-4">
-        <div className="text-xs text-neutral-400 mb-2">Quick actions</div>
         <div className="flex gap-2">
-          <button title="Kick off agent workflow for this product and audience" className="flex-1 btn-soft text-xs" onClick={start}>Run without saving</button>
-          <button className="btn-soft text-xs" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
+          <button title="Kick off agent workflow for this product and audience" className="btn-soft text-[12px] px-4 py-2" onClick={start}>Run without saving</button>
+          <button className="btn-soft text-[12px] px-4 py-2 min-w-[128px]" onClick={()=>onSaveProject?.({ product, audience, dailyBudget: budget, brandRules: rules })}>Save changes</button>
         </div>
         {hasContext && (
           <div className="mt-3 text-sm md:text-base text-neutral-200 space-y-1">
@@ -106,8 +115,8 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
           <div className="font-medium text-brand-blue">Key outcomes</div>
           <div className="flex items-center gap-2 text-xs">
             <span className="text-neutral-400">View for</span>
-            <button className={`px-2 py-1 rounded border ${persona==="Ad Rep"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Ad Rep")}>Ad Rep</button>
-            <button className={`px-2 py-1 rounded border ${persona==="Executive"?"bg-white text-black border-white":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Executive")}>Executive</button>
+            <button className={`px-2 py-1 rounded border ${persona==="Ad Rep"?"border-white bg-white text-black":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Ad Rep")}>Ad Rep</button>
+            <button className={`px-2 py-1 rounded border ${persona==="Executive"?"border-white bg-white text-black":"bg-neutral-900 border-neutral-800"}`} onClick={()=>setPersona("Executive")}>Executive</button>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -120,8 +129,16 @@ export default function Plan({ onRun, runId, onQueue, role, project, onSaveProje
           )}
         </div>
       </div>
-      <AgentGrid title="Target & offer" agents={allowedPlanAgents(role).filter(a=>["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
-      <AgentGrid title="Creative & guardrails" agents={allowedPlanAgents(role).filter(a=>["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      </>
+      )}
+      {planSubTab==="Modules" && (
+      <>
+      <div className="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <AgentGrid title="Target & offer" agents={allowedPlanAgents(role).filter(a=>["Audience DNA","Warm start","Offer composer","Asset librarian","Creative brief"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+        <AgentGrid title="Creative & guardrails" agents={allowedPlanAgents(role).filter(a=>["Creative variants","Gene splicer","Tone balancer","Compliance review","Thumb‑stop","Localization","Accessibility","Style prompts","Voiceover scripts","UGC outline","Prompt palette"].includes(a))} runId={runId} snapshot={snapshot} onQueue={onQueue} />
+      </div>
+      </>
+      )}
     </div>
   );
 }
@@ -152,9 +169,9 @@ const AGENT_DISPLAY: Record<string, "tile"|"card"> = {
 
 function AgentGrid({ title, agents, runId, snapshot, onQueue}:{title:string; agents:string[]; runId?: string; snapshot?: any; onQueue?: (item:any)=>void}) {
   return (
-    <div className="lg:col-span-3 card p-4">
+    <div className="card p-4 h-full">
       <div className="font-medium mb-3 text-brand-blue">{title}</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
         {agents.map(a=>{
           const mode = AGENT_DISPLAY[a] ?? "tile";
           return mode === "card"
@@ -354,7 +371,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Audience DNA": {
       const cohorts = Array.isArray(a.audienceDNA) ? a.audienceDNA.slice(0,3) : [];
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {cohorts.length ? (
             <div className="space-y-1 text-xs">
@@ -365,7 +382,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 </label>
               ))}
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "audienceDNA", title: "Send cohorts to Experiment" })}>Send to Experiment</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Export CSV</button>
               </div>
               {JsonToggle(a.audienceDNA)}
@@ -393,7 +410,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Add ${o.label} to Offer Catalog` })}>Add to Offer Catalog</button>
-                    <button className="px-2 py-1 rounded bg-white text-black" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Send ${o.label} to Experiment`, impact: "+2% iROAS" })}>Send to Experiment</button>
+                    <button className="btn-soft" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "offers", title: `Send ${o.label} to Experiment`, impact: "+2% iROAS" })}>Send to Experiment</button>
                   </div>
                 </div>
               ))}
@@ -416,7 +433,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 ))}
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs">Attach to creative</button>
+                <button className="btn-soft text-xs">Attach to creative</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Open in editor</button>
               </div>
               {JsonToggle(a.assets)}
@@ -428,7 +445,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
     case "Creative brief": {
       const b = a.creativeBrief;
       return (
-        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 md:col-span-2 lg:col-span-2 hover-card fade-in">
+        <div className="border border-neutral-800 rounded-xl p-3 bg-neutral-950 hover-card fade-in">
           {header}
           {b ? (
             <div className="text-xs space-y-1">
@@ -443,7 +460,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                   <option>v2</option>
                 </select>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Diff vs previous</button>
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "brief", title: "Lock brief" })}>Lock brief</button>
               </div>
               {JsonToggle(a.creativeBrief)}
             </div>
@@ -462,7 +479,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
                 <div key={idx} className="truncate">{v.headline} <span className="text-neutral-500">• {v.cta}</span></div>
               ))}
               <div className="flex items-center gap-2 mt-2">
-                <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
+                <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent: "creative", title: "Approve for test" })}>Approve for test</button>
                 <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Regenerate</button>
               </div>
               {JsonToggle(a.creatives)}
@@ -483,7 +500,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Reorder</button>
-            <button className="px-2 py-1 rounded bg-white text-black text-xs">Export outline</button>
+            <button className="btn-soft text-xs">Export outline</button>
           </div>
           {JsonToggle(a.ugc)}
         </div>
@@ -501,7 +518,7 @@ function AgentCardDetailed({ agent, runId, snapshot, onQueue }:{agent:string; ru
             </div>
           ) : empty}
           <div className="flex items-center gap-2 mt-2">
-            <button className="px-2 py-1 rounded bg-white text-black text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
+            <button className="btn-soft text-xs" onClick={()=>onQueue && onQueue({ id: cryptoRandomId(), agent:"thumbstop", title:"Set as thumbnail" })}>Set as thumbnail</button>
             <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">Add opening caption</button>
           </div>
           {JsonToggle(a.thumbstop)}

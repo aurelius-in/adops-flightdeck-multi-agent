@@ -6,7 +6,7 @@ export default function Govern(){
         <div className="text-sm text-neutral-300">Claims, tone, and region overrides.</div>
         <div className="flex items-center gap-2 mt-2">
           <button className="px-2 py-1 rounded bg-neutral-900 border border-neutral-800 hover:border-brand-blue text-xs">View policy set</button>
-          <button className="px-2 py-1 rounded bg-white text-black text-xs">Export pack</button>
+          <button className="btn-soft text-xs">Export pack</button>
         </div>
       </div>
       <div className="card p-4" title="Audit log">
