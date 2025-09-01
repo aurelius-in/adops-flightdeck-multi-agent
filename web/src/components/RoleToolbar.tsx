@@ -53,8 +53,7 @@ export default function RoleToolbar({ role, onQueue }:{ role:string; onQueue:(it
 
 function BarWrap({ label, children }:{ label:string; children:any }) {
   return (
-    <div className="card p-3 flex items-center justify-between fade-in" title={label}>
-      <div className="text-xs text-neutral-400">{label}</div>
+    <div className="card p-3 flex items-center gap-2 fade-in" title={label}>
       <div className="flex items-center gap-2">{children}</div>
     </div>
   );

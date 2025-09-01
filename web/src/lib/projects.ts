@@ -149,6 +149,23 @@ export function seedSampleProjectsIfEmpty() {
   if (created[0]) setLastProjectId(created[0].id);
 }
 
+export function ensureMinProjects(min: number = 20) {
+  const count = listProjects().length;
+  if (count >= min) return;
+  const categories = ["Fitness","Skincare","Travel","Fintech","SaaS","Gaming","Education","Home","Food","Beauty","Pets","Streaming","Marketplace","Auto","Health","Fashion","Coffee","Outdoors","Wellness","Productivity"];
+  for (let i = count; i < min; i++) {
+    const idx = i % categories.length;
+    const name = `Project • ${categories[idx]} ${i+1}`;
+    createProject({
+      name,
+      product: `${categories[idx]} Product ${i+1}`,
+      audience: "Mixed audience",
+      dailyBudget: 100 + ((i*25) % 700),
+      brandRules: "No sensitive claims. Keep tone clear.",
+    });
+  }
+}
+
 function cryptoId(): string {
   try { return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,"0")).join(""); } catch { return Math.random().toString(36).slice(2); }
 }
